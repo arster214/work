@@ -1,8 +1,0 @@
-prefix=/home/fang/catkin_wsfrj/devel/.private/arm_servo
-
-Name: arm_servo
-Description: Description of arm_servo
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

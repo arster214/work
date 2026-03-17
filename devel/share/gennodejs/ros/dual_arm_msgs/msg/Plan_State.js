@@ -1,1 +1,0 @@
-/home/fang/catkin_wsfrj/devel/.private/dual_arm_msgs/share/gennodejs/ros/dual_arm_msgs/msg/Plan_State.js

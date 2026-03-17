@@ -1,8 +1,0 @@
-prefix=/home/fang/catkin_wsfrj/install
-
-Name: table_obstacles
-Description: Description of table_obstacles
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

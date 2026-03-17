@@ -1,1 +1,0 @@
-/home/fang/catkin_wsfrj/devel/.private/arm_servo/lib/pkgconfig/arm_servo.pc

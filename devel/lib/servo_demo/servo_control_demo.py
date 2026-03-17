@@ -1,1 +1,0 @@
-/home/fang/catkin_wsfrj/devel/.private/servo_demo/lib/servo_demo/servo_control_demo.py

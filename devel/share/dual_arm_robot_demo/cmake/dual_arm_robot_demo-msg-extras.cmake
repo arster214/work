@@ -1,1 +1,0 @@
-/home/fang/catkin_wsfrj/devel/.private/dual_arm_robot_demo/share/dual_arm_robot_demo/cmake/dual_arm_robot_demo-msg-extras.cmake

@@ -1,8 +1,0 @@
-prefix=/home/fang/catkin_wsfrj/install
-
-Name: d435_demo
-Description: Description of d435_demo
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: roscpp rospy std_msgs cv_bridge

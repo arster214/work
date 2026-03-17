@@ -1,4 +1,0 @@
-dual_arm_control/dual_arm_gazebo/dual_75b_arm_gazebo
-/home/fang/catkin_wsfrj/devel/.private/dual_75b_arm_gazebo/lib/pkgconfig/dual_75b_arm_gazebo.pc /home/fang/catkin_wsfrj/devel/lib/pkgconfig/dual_75b_arm_gazebo.pc
-/home/fang/catkin_wsfrj/devel/.private/dual_75b_arm_gazebo/share/dual_75b_arm_gazebo/cmake/dual_75b_arm_gazeboConfig.cmake /home/fang/catkin_wsfrj/devel/share/dual_75b_arm_gazebo/cmake/dual_75b_arm_gazeboConfig.cmake
-/home/fang/catkin_wsfrj/devel/.private/dual_75b_arm_gazebo/share/dual_75b_arm_gazebo/cmake/dual_75b_arm_gazeboConfig-version.cmake /home/fang/catkin_wsfrj/devel/share/dual_75b_arm_gazebo/cmake/dual_75b_arm_gazeboConfig-version.cmake

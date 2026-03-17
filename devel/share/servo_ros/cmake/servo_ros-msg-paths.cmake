@@ -1,1 +1,0 @@
-/home/fang/catkin_wsfrj/devel/.private/servo_ros/share/servo_ros/cmake/servo_ros-msg-paths.cmake

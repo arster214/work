@@ -1,1 +1,0 @@
-/home/fang/catkin_wsfrj/devel/.private/d435_demo/lib/pkgconfig/d435_demo.pc

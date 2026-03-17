@@ -1,1 +1,0 @@
-/home/fang/catkin_wsfrj/devel/.private/dual_arm_msgs/lib/python3/dist-packages/dual_arm_msgs/msg/_GetArmState_Command.py

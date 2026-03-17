@@ -1,5 +1,0 @@
-agv_demo
-/home/fang/catkin_wsfrj/devel/.private/agv_demo/lib/pkgconfig/agv_demo.pc /home/fang/catkin_wsfrj/devel/lib/pkgconfig/agv_demo.pc
-/home/fang/catkin_wsfrj/devel/.private/agv_demo/lib/agv_demo/agv_demo.py /home/fang/catkin_wsfrj/devel/lib/agv_demo/agv_demo.py
-/home/fang/catkin_wsfrj/devel/.private/agv_demo/share/agv_demo/cmake/agv_demoConfig.cmake /home/fang/catkin_wsfrj/devel/share/agv_demo/cmake/agv_demoConfig.cmake
-/home/fang/catkin_wsfrj/devel/.private/agv_demo/share/agv_demo/cmake/agv_demoConfig-version.cmake /home/fang/catkin_wsfrj/devel/share/agv_demo/cmake/agv_demoConfig-version.cmake

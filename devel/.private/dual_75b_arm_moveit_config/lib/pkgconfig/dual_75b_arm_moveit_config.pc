@@ -1,8 +1,0 @@
-prefix=/home/fang/catkin_wsfrj/devel/.private/dual_75b_arm_moveit_config
-
-Name: dual_75b_arm_moveit_config
-Description: Description of dual_75b_arm_moveit_config
-Version: 0.3.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

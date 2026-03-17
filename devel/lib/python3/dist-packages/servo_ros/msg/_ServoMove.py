@@ -1,1 +1,0 @@
-/home/fang/catkin_wsfrj/devel/.private/servo_ros/lib/python3/dist-packages/servo_ros/msg/_ServoMove.py

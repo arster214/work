@@ -1,1 +1,0 @@
-/home/fang/catkin_wsfrj/devel/.private/dual_arm_robot_demo/lib/dual_arm_robot_demo/catch2object_hand.py

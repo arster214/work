@@ -1,1 +1,0 @@
-/home/fang/catkin_wsfrj/devel/.private/usb_camera_demo/share/usb_camera_demo/cmake/usb_camera_demoConfig.cmake

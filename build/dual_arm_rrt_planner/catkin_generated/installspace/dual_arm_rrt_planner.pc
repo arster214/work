@@ -1,8 +1,0 @@
-prefix=/home/fang/catkin_wsfrj/install
-
-Name: dual_arm_rrt_planner
-Description: Description of dual_arm_rrt_planner
-Version: 0.0.0
-Cflags: -I${prefix}/include
-Libs: -L${prefix}/lib -ldual_arm_rrt_plugin
-Requires: roscpp moveit_core moveit_ros_planning_interface pluginlib tf2_geometry_msgs

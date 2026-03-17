@@ -1,6 +1,0 @@
-devel_space: /home/fang/catkin_wsfrj/devel
-install: false
-install_space: /home/fang/catkin_wsfrj/install
-profile: default
-source_space: /home/fang/catkin_wsfrj/src
-workspace: /home/fang/catkin_wsfrj

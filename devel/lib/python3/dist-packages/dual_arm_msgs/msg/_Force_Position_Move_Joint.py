@@ -1,1 +1,0 @@
-/home/fang/catkin_wsfrj/devel/.private/dual_arm_msgs/lib/python3/dist-packages/dual_arm_msgs/msg/_Force_Position_Move_Joint.py

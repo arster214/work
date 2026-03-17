@@ -1,1 +1,0 @@
-/home/fang/catkin_wsfrj/devel/.private/table_obstacles/lib/table_obstacles/publish_bt_octomap.py

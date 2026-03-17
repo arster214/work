@@ -1,1 +1,0 @@
-/home/fang/catkin_wsfrj/devel/.private/servo_ros/share/common-lisp/ros/servo_ros/msg/_package.lisp

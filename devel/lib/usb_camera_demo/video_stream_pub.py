@@ -1,1 +1,0 @@
-/home/fang/catkin_wsfrj/devel/.private/usb_camera_demo/lib/usb_camera_demo/video_stream_pub.py

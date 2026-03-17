@@ -1,1 +1,0 @@
-/home/fang/catkin_wsfrj/devel/.private/dual_arm_robot_demo/share/common-lisp/ros/dual_arm_robot_demo/msg/_package_ObjectPose.lisp

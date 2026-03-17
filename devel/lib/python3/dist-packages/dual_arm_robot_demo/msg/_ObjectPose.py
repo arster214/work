@@ -1,1 +1,0 @@
-/home/fang/catkin_wsfrj/devel/.private/dual_arm_robot_demo/lib/python3/dist-packages/dual_arm_robot_demo/msg/_ObjectPose.py

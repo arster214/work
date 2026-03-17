@@ -1,1 +1,0 @@
-/home/fang/catkin_wsfrj/devel/.private/dual_arm_msgs/share/common-lisp/ros/dual_arm_msgs/msg/Start_Multi_Drag_Teach.lisp

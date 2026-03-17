@@ -1,1 +1,0 @@
-/home/fang/catkin_wsfrj/devel/.private/servo_ros/share/roseus/ros/servo_ros/msg/ServoAngle.l
