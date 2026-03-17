@@ -1,0 +1,10 @@
+<library path="libbaseline_rrt_planner">
+  <class name="baseline_rrt/BaselineRRTPlannerManager" 
+         type="baseline_rrt::BaselineRRTPlannerManager" 
+         base_class_type="planning_interface::PlannerManager">
+    <description>
+      Baseline RRT and RRT* planners for comparison.
+      Basic implementations with KD-Tree but without goal bias.
+    </description>
+  </class>
+</library>

@@ -1,0 +1,9 @@
+planner_configs:
+  BasicRRT:
+    type: baseline_rrt/BaselineRRTPlannerManager
+    range: 0.5  # Maximum extension distance
+    
+  BasicRRTStar:
+    type: baseline_rrt/BaselineRRTPlannerManager
+    range: 0.5  # Maximum extension distance
+    rewire_radius: 0.75  # Rewiring radius for RRT*

@@ -1,0 +1,56 @@
+# 测试姿态配置文件
+# 用于论文数据采集
+
+# 规划组名称
+group_name: "r_arm"
+
+# 起始姿态 (home position - 全零)
+home_joints: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+# 目标姿态列表
+goal_poses:
+  - id: "pose_1"
+    description: "目标姿态 1"
+    joints: [1.862, 0.664, 0.345, 1.449, -1.457, 1.128, 0.849]
+
+  - id: "pose_2"
+    description: "目标姿态 2"
+    joints: [-1.012, -1.372, 2.331, 0.195, -2.949, -0.966, -3.475]
+
+  - id: "pose_3"
+    description: "目标姿态 3"
+    joints: [2.630, 0.850, -0.761, 1.432, -2.464, -0.535, 1.681]
+
+# 规划器配置
+planners:
+  - name: "BasicRRT"
+    display_name: "RRT (Baseline)"
+    description: "基础 RRT（KD-Tree，无目标偏置）"
+    params:
+      range: 0.5
+      
+  - name: "BasicRRTStar"
+    display_name: "RRT* (Baseline)"
+    description: "基础 RRT*（KD-Tree，无目标偏置）"
+    params:
+      range: 0.5
+      rewire_radius: 0.75
+      
+  - name: "ImprovedRRT"
+    display_name: "T-RRT+RRT* (Ours)"
+    description: "我们的完整 ImprovedRRT 实现"
+    params:
+      enable_trrt: true
+      enable_rrt_star: true
+      range: 0.5
+      goal_bias: 0.05
+      init_temperature: 100.0
+      temp_change_factor: 0.1
+      rewire_radius: 0.75
+
+# 测试参数
+test_params:
+  num_runs: 20              # 每个姿态重复次数
+  timeout: 30.0             # 规划超时时间（秒）- BasicRRT 需要更长时间
+  reset_delay: 1.0          # 重置后等待时间（秒）- 增加以确保稳定
+  output_dir: "~/benchmark_results"  # 输出目录

@@ -1,0 +1,1 @@
+/home/fang/catkin_wsfrj/devel/.private/table_obstacles/share/table_obstacles/cmake/table_obstaclesConfig.cmake

@@ -1,0 +1,1 @@
+/home/fang/catkin_wsfrj/devel/.private/dual_75b_arm_rmg24_moveit_config/share/dual_75b_arm_rmg24_moveit_config/cmake/dual_75b_arm_rmg24_moveit_configConfig-version.cmake

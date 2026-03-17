@@ -1,0 +1,7 @@
+<launch>
+    <rosparam file="$(find usb_camera_demo)/config/camera_params.yaml" command="load" />
+    <arg name="idx" default="2"/>
+    <node name="usb_camera_node" pkg="usb_camera_demo" type="video_stream_pub.py" output="screen">
+           <param name="idx" value="$(arg idx)"/>    
+    </node>
+</launch>

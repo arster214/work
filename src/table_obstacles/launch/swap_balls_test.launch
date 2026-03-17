@@ -1,0 +1,12 @@
+<launch>
+  <!-- 启动机器人 bringup（包含 move_group）并在启动后运行 swap_balls_test 节点 -->
+  <include file="$(find dual_75b_arm_gazebo)/launch/arm_75_bringup_moveit_rmg24.launch"/>
+
+  <arg name="wait_time" default="12" />
+
+  <node pkg="table_obstacles"
+        type="swap_balls_test.py"
+        name="swap_balls_test"
+        output="screen"
+        launch-prefix="bash -c 'sleep $(arg wait_time); exec $0 $@'" />
+</launch>

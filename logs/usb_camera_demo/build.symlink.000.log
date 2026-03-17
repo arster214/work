@@ -1,0 +1,5 @@
+Symlinking /home/fang/catkin_wsfrj/devel/lib/pkgconfig/usb_camera_demo.pc
+Symlinking /home/fang/catkin_wsfrj/devel/lib/usb_camera_demo/video_stream_sub.py
+Symlinking /home/fang/catkin_wsfrj/devel/lib/usb_camera_demo/video_stream_pub.py
+Symlinking /home/fang/catkin_wsfrj/devel/share/usb_camera_demo/cmake/usb_camera_demoConfig-version.cmake
+Symlinking /home/fang/catkin_wsfrj/devel/share/usb_camera_demo/cmake/usb_camera_demoConfig.cmake

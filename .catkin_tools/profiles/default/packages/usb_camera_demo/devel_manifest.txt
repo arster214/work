@@ -1,0 +1,6 @@
+camera_demo/usb_camera_demo
+/home/fang/catkin_wsfrj/devel/.private/usb_camera_demo/lib/pkgconfig/usb_camera_demo.pc /home/fang/catkin_wsfrj/devel/lib/pkgconfig/usb_camera_demo.pc
+/home/fang/catkin_wsfrj/devel/.private/usb_camera_demo/lib/usb_camera_demo/video_stream_sub.py /home/fang/catkin_wsfrj/devel/lib/usb_camera_demo/video_stream_sub.py
+/home/fang/catkin_wsfrj/devel/.private/usb_camera_demo/lib/usb_camera_demo/video_stream_pub.py /home/fang/catkin_wsfrj/devel/lib/usb_camera_demo/video_stream_pub.py
+/home/fang/catkin_wsfrj/devel/.private/usb_camera_demo/share/usb_camera_demo/cmake/usb_camera_demoConfig-version.cmake /home/fang/catkin_wsfrj/devel/share/usb_camera_demo/cmake/usb_camera_demoConfig-version.cmake
+/home/fang/catkin_wsfrj/devel/.private/usb_camera_demo/share/usb_camera_demo/cmake/usb_camera_demoConfig.cmake /home/fang/catkin_wsfrj/devel/share/usb_camera_demo/cmake/usb_camera_demoConfig.cmake

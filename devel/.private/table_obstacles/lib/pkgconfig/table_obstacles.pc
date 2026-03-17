@@ -1,0 +1,8 @@
+prefix=/home/fang/catkin_wsfrj/devel/.private/table_obstacles
+
+Name: table_obstacles
+Description: Description of table_obstacles
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

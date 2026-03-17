@@ -1,0 +1,9 @@
+Symlinking /home/fang/catkin_wsfrj/devel/lib/pkgconfig/table_obstacles.pc
+Symlinking /home/fang/catkin_wsfrj/devel/lib/table_obstacles/publish_bt_octomap.py
+Symlinking /home/fang/catkin_wsfrj/devel/lib/table_obstacles/add_table_obstacles.py
+Symlinking /home/fang/catkin_wsfrj/devel/lib/table_obstacles/publish_map_to_moveit.py
+Symlinking /home/fang/catkin_wsfrj/devel/lib/table_obstacles/wait_and_start_octomap_server.py
+Symlinking /home/fang/catkin_wsfrj/devel/lib/table_obstacles/add_table_obstacles_gazebo.py
+Symlinking /home/fang/catkin_wsfrj/devel/lib/table_obstacles/swap_balls_test.py
+Symlinking /home/fang/catkin_wsfrj/devel/share/table_obstacles/cmake/table_obstaclesConfig.cmake
+Symlinking /home/fang/catkin_wsfrj/devel/share/table_obstacles/cmake/table_obstaclesConfig-version.cmake

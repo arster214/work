@@ -1,0 +1,1 @@
+/home/fang/catkin_wsfrj/devel/.private/dual_arm_robot_demo/include/dual_arm_robot_demo/ObjectPose.h

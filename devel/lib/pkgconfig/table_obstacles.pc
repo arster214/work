@@ -1,0 +1,1 @@
+/home/fang/catkin_wsfrj/devel/.private/table_obstacles/lib/pkgconfig/table_obstacles.pc

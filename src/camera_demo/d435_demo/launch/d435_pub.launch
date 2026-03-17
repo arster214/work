@@ -1,0 +1,9 @@
+
+<launch>
+    <arg name="idx" default="3"/>
+    <!-- Start the RealSense camera node -->
+    <node name="realsense_camera_node" pkg="d435_demo" type="video_stream_pub.py" output="screen">
+        <param name="idx" value="$(arg idx)"/>
+    </node>
+
+</launch>

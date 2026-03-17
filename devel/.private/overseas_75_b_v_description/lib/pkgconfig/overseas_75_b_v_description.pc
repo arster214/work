@@ -1,0 +1,8 @@
+prefix=/home/fang/catkin_wsfrj/devel/.private/overseas_75_b_v_description
+
+Name: overseas_75_b_v_description
+Description: Description of overseas_75_b_v_description
+Version: 1.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

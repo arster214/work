@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: overseas_75_b_v_description
+    relative_path: urdf/overseas_75_b_v_description_rmg24.urdf.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/overseas_75_b_v_description.srdf
+  CONFIG:
+    author_name: Jehan
+    author_email: 957417302@qq.com
+    generated_timestamp: 1737338218

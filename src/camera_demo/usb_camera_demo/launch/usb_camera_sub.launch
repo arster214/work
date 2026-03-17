@@ -1,0 +1,12 @@
+    
+<launch>
+    <!-- 订阅第一个摄像头 -->
+    <node name="image_subscriber_node0" pkg="usb_camera_demo" type="video_stream_sub.py" output="screen">
+        <param name="idx" value="0" />
+    </node>
+
+    <!-- 订阅第二个摄像头 -->
+    <node name="image_subscriber_node1" pkg="usb_camera_demo" type="video_stream_sub.py" output="screen">
+        <param name="idx" value="1" />
+    </node>
+</launch>

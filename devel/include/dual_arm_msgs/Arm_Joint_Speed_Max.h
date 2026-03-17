@@ -1,0 +1,1 @@
+/home/fang/catkin_wsfrj/devel/.private/dual_arm_msgs/include/dual_arm_msgs/Arm_Joint_Speed_Max.h

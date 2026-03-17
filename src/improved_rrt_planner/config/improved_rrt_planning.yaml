@@ -1,0 +1,48 @@
+# ImprovedRRT规划器配置（OMPL TRRT风格）
+# 
+# 这是一个完全模仿OMPL TRRT的实现
+# - 核心是纯RRT算法
+# - T-RRT的温度过滤功能可通过enable_trrt开关启用
+#
+planner_configs:
+  ImprovedRRT:
+    type: improved_rrt_planner/ImprovedRRTPlannerManager
+    
+    # ============================================================================
+    # 核心 RRT 参数（必需）
+    # ============================================================================
+    range: 0.5              # 最大扩展距离（弧度），0.0表示自动配置
+    goal_bias: 0.05         # 目标偏置概率 [0.0, 1.0]
+    
+    # ============================================================================
+    # RRT* 参数（可选，通过enable_rrt_star开关）
+    # ============================================================================
+    enable_rrt_star: true               # 是否启用RRT*优化（rewiring）
+    rewire_radius: 0.0                     # Rewiring搜索半径（0.0表示自动为1.5*range）
+    
+    # ============================================================================
+    # T-RRT 参数（可选，通过enable_trrt开关）
+    # ============================================================================
+    enable_trrt: true                   # 是否启用T-RRT温度过滤
+    init_temperature: 100.0                # 初始温度
+    temp_change_factor: 0.1                # 温度变化因子（指数）
+    cost_threshold: 1000000.0              # 代价阈值（超过此值的运动会被拒绝）
+    frontier_threshold: 0.0                # 前沿阈值（0.0表示自动计算为空间范围的1%）
+    frontier_node_ratio: 0.1               # 非前沿节点与前沿节点的比例
+  # 双向 Connect 模式开关（true 启用，从 start/goal 同时生长两棵树并尝试连接）
+  enable_connect: true
+
+  # RRT* 相关
+  enable_rrt_star: true
+  rewire_radius: 0.6
+
+  # T-RRT 相关
+  enable_trrt: true
+  init_temperature: 100.0
+  temp_change_factor: 0.1
+  cost_threshold: 1000.0
+  frontier_threshold: 0.0
+  frontier_node_ratio: 0.1
+
+  # 可选：调整重连接（rewire）执行频率的参数（在代码中为常量 10 次迭代一次）
+  # 如果你想更细粒度控制，请让我修改代码以读取该参数并应用。当前可通过调整 rewire_radius 控制影响范围。

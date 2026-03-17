@@ -1,0 +1,88 @@
+# DualArmRRT 规划器配置（独立于 improved_rrt，不覆盖原始配置）
+# 与 improved_rrt 保持一致：指定 planning_plugin 以便 MoveIt 在 UI/启动时识别
+planning_plugin: dual_arm_planner/DualArmPlannerManager
+# 按照 improved_rrt 的写法：在 planner_configs 下为每个 planner指定 type 字段
+planner_configs:
+  DualArmRRT:
+    type: dual_arm_planner/DualArmPlannerManager
+    range: 0.3
+    goal_bias: 0.05
+    enable_rrt_star: true
+    rewire_radius: 0.6
+    enable_trrt: true
+    init_temperature: 100.0
+    temp_change_factor: 0.1
+    cost_threshold: 1000.0
+    frontier_threshold: 0.0
+    frontier_node_ratio: 0.1
+    enable_connect: true
+
+# 设置 pipeline 级默认 planner（有些 RViz 版本会用这个来填充 Planner 下拉）
+default_planner_config: DualArmRRT
+
+# 为每个规划组（或组合组）配置使用的 planner_configs 名称
+r_arm:
+  planner_configs:
+    - DualArmRRT
+  default_planner_config: DualArmRRT
+  projection_evaluator: joints(r_joint1,r_joint2)
+  longest_valid_segment_fraction: 0.005
+
+l_arm:
+  planner_configs:
+    - DualArmRRT
+  default_planner_config: DualArmRRT
+  projection_evaluator: joints(l_joint1,l_joint2)
+  longest_valid_segment_fraction: 0.005
+
+dual_arms:
+  planner_configs:
+    - DualArmRRT
+  default_planner_config: DualArmRRT
+  # projection_evaluator 对于双臂可以选择关键关节对
+  projection_evaluator: joints(l_joint1,r_joint1)
+  longest_valid_segment_fraction: 0.005
+
+# -------------------------------------------------------------------
+# Hybrid Connect 模块配置
+# 这些参数会被加载到 move_group 节点的私有命名空间下 (例如 /move_group/hybrid_connect/...)
+# DualArmRRT 规划器会读取这些参数来启用/禁用特定模块及调整其行为
+# -------------------------------------------------------------------
+hybrid_connect:
+  # 总开关
+  enable_hybrid_connect: true
+  
+  # 动态树平衡：尝试平衡两棵树的生长
+  enable_dynamic_tree_balancing: true
+  
+  # 采样策略模块
+  enable_task_space_sobol_sampling: false # [推荐关闭] 改用关节空间随机采样。由于双臂工作空间复杂，笛卡尔空间采样的 IK 成功率极低，容易导致超时。
+  enable_goal_bias_sampling: true         # 目标偏向采样 (以一定概率直接采样目标)
+  
+  # 节点筛选与接受模块
+  enable_sparse_rejection: true           # 稀疏拒绝 (避免节点过于密集)
+  enable_trrt_acceptance: true            # T-RRT 接受准则 (基于成本的接受/拒绝) -- 需配合 enable_trrt: true
+  
+  # 扩展与连接模块
+  enable_variable_step: true              # 可变步长扩展 (根据环境复杂度调整步长)
+  enable_greedy_connect: true             # 贪婪连接 (尝试直接连接两棵树，直到障碍物)
+  enable_connect: true                    # 双向 RRT Connect 模式
+  
+  # 避障与势场模块
+  enable_aabb_apf: true                   # AABB 人工势场引导 (APF)
+  # obstacle_avoidance_mode: "aabb_apf"   # 模式覆盖: "voxel_rrt" (关闭APF) 或 "aabb_apf" (开启APF)
+  apf_joint_blend: 0.35                   # APF 力在关节空间的混合权重
+  
+  # 参数调整
+  sparse_rejection_ratio: 0.15            # 当前稀疏拒绝比率 (动态调整)
+  min_sparse_rejection_ratio: 0.10        # 最小稀疏拒绝比率
+  max_sparse_rejection_ratio: 0.20        # 最大稀疏拒绝比率
+  
+  connect_distance_ratio: 2.0             # 连接尝试的距离倍率 (相对于步长)
+  
+  # 任务空间参数 (用于 Sobol 采样和 IK)
+  ik_arm_group: "dual_arms"                   # 用于计算 FK/IK 的规划组名称 (通常是单臂名称，或留空自动推断)
+  task_space_min: [-1.2, -1.2, 0.0]       # 采样空间包围盒最小值 [x, y, z]
+  task_space_max: [1.2, 1.2, 1.6]         # 采样空间包围盒最大值 [x, y, z]
+
+# 你可以按需调整上面的参数（range, rewire_radius 等），或者在运行时通过 rosparam 覆盖它们

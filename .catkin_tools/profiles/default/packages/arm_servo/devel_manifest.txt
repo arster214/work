@@ -1,0 +1,4 @@
+dual_arm_control/arm_servo
+/home/fang/catkin_wsfrj/devel/.private/arm_servo/lib/pkgconfig/arm_servo.pc /home/fang/catkin_wsfrj/devel/lib/pkgconfig/arm_servo.pc
+/home/fang/catkin_wsfrj/devel/.private/arm_servo/share/arm_servo/cmake/arm_servoConfig.cmake /home/fang/catkin_wsfrj/devel/share/arm_servo/cmake/arm_servoConfig.cmake
+/home/fang/catkin_wsfrj/devel/.private/arm_servo/share/arm_servo/cmake/arm_servoConfig-version.cmake /home/fang/catkin_wsfrj/devel/share/arm_servo/cmake/arm_servoConfig-version.cmake

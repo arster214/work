@@ -1,0 +1,19 @@
+<launch>
+  <!-- 论文数据采集 Launch 文件 -->
+  
+  <!-- 参数 -->
+  <arg name="config_file" default="$(find planner_benchmark)/config/test_poses.yaml" />
+  <arg name="num_runs" default="20" />
+  <arg name="timeout" default="10.0" />
+  <arg name="output_dir" default="$(env HOME)/benchmark_results" />
+  
+  <!-- 运行数据采集脚本 -->
+  <node name="paper_data_collector" pkg="planner_benchmark" type="paper_data_collection.py" 
+        output="screen" required="true">
+    <param name="config_file" value="$(arg config_file)" />
+    <param name="num_runs" value="$(arg num_runs)" />
+    <param name="timeout" value="$(arg timeout)" />
+    <param name="output_dir" value="$(arg output_dir)" />
+  </node>
+  
+</launch>

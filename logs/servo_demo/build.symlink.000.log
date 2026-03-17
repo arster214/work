@@ -1,0 +1,4 @@
+Symlinking /home/fang/catkin_wsfrj/devel/lib/pkgconfig/servo_demo.pc
+Symlinking /home/fang/catkin_wsfrj/devel/lib/servo_demo/servo_control_demo.py
+Symlinking /home/fang/catkin_wsfrj/devel/share/servo_demo/cmake/servo_demoConfig.cmake
+Symlinking /home/fang/catkin_wsfrj/devel/share/servo_demo/cmake/servo_demoConfig-version.cmake

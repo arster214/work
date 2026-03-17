@@ -1,0 +1,16 @@
+<launch>
+
+    <!-- Visualization nodes for each camera -->
+    <node name="visualization_node_0" pkg="d435_demo" type="video_stream_sub.py" output="screen">
+        <param name="camera_index" value="0" />
+    </node>
+
+    <node name="visualization_node_1" pkg="d435_demo" type="video_stream_sub.py" output="screen">
+        <param name="camera_index" value="1" />
+    </node>
+
+    <node name="visualization_node_2" pkg="d435_demo" type="video_stream_sub.py" output="screen">
+        <param name="camera_index" value="2" />
+    </node>
+
+</launch>

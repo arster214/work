@@ -1,0 +1,19 @@
+<launch>
+  <!-- arg: path to .bt file to load by octomap_server -->
+  <arg name="map_file" default="/home/fang/catkin_ws/clean_map_1213.bt"/>
+  <arg name="frame_id" default="base_link_underpan"/>
+  <arg name="publish_rate" default="1.0"/>
+  <arg name="octomap_topic" default="/octomap_full"/>
+
+  <!-- Start octomap_server and instruct it to load the provided .bt file -->
+  <node name="octomap_server" pkg="octomap_server" type="octomap_server_node" output="screen">
+    <param name="frame_id" value="$(arg frame_id)"/>
+    <param name="map_file" value="$(arg map_file)"/>
+  </node>
+
+  <!-- Start the publisher that converts octomap -> MoveIt PlanningScene -->
+  <node name="publish_map_to_moveit" pkg="table_obstacles" type="publish_map_to_moveit.py" output="screen" cwd="node">
+    <param name="octomap_topic" value="$(arg octomap_topic)"/>
+    <param name="publish_rate" value="$(arg publish_rate)"/>
+  </node>
+</launch>

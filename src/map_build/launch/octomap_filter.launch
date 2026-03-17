@@ -1,0 +1,35 @@
+<launch>
+    <!-- 参数定义：支持从外部传入 -->
+    <arg name="map_min_z" default="0.05"/>
+    <arg name="map_max_z" default="2.2"/>
+    <arg name="map_min_x" default="-1.5"/>
+    <arg name="map_max_x" default="1.5"/>
+    <arg name="map_min_y" default="-1.0"/>
+    <arg name="map_max_y" default="1.0"/>
+
+    <!-- 启动 octomap 过滤节点 -->
+    <node pkg="map_build" type="octomap_filter_node" name="octomap_filter_node" output="screen">
+        <!-- 订阅：原始的 raw 话题 -->
+        <remap from="octomap_binary" to="/octomap_binary_raw"/>
+        
+        <!-- 发布：接管标准话题名称，方便 RViz 直接显示 -->
+        <remap from="octomap_filtered" to="/octomap_binary"/>
+        <remap from="occupied_cells_vis_array" to="/occupied_cells_vis_array"/>
+
+        <!-- 过滤参数 -->
+        <!-- 高度范围 (米) -->
+        <param name="min_z" value="$(arg map_min_z)"/>
+        <param name="max_z" value="$(arg map_max_z)"/>
+        
+        <!-- X轴范围 (米) -->
+        <param name="min_x" value="$(arg map_min_x)"/>
+        <param name="max_x" value="$(arg map_max_x)"/>
+
+        <!-- Y轴范围 (米) -->
+        <param name="min_y" value="$(arg map_min_y)"/>
+        <param name="max_y" value="$(arg map_max_y)"/>
+        
+        <!-- 聚类过滤阈值：过大容易把真实但稀疏的障碍删掉，先放宽以减少大块空洞 -->
+        <param name="min_cluster_size" value="30"/>
+    </node>
+</launch>

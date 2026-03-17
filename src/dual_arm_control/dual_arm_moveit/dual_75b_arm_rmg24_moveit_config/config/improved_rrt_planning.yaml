@@ -1,0 +1,37 @@
+# ImprovedRRT规划器配置
+planning_plugin: improved_rrt_planner/ImprovedRRTPlannerManager
+
+# 规划器参数
+planner_configs:
+  ImprovedRRT:
+    range: 0.3  # 最大扩展步长（弧度），建议 0.1-0.5，根据机器人维度调整
+    goal_bias: 0.05  # 目标偏置概率（5% 的概率直接采样目标）
+    # RRT* 相关
+    enable_rrt_star: true        # 启用 RRT* 优化（选择最优父节点并 rewire）
+    rewire_radius: 0.6           # rewire 搜索半径（0 表示自动使用 1.5*range）
+    # T-RRT 相关
+    enable_trrt: true            # 启用 T-RRT（基于代价的转移测试）
+    init_temperature: 100.0      # 初始温度
+    temp_change_factor: 0.1      # 温度变化因子（越大温度变化越剧烈）
+    cost_threshold: 1000.0       # 代价上限，超过则拒绝
+    frontier_threshold: 0.0      # 前沿阈值（0 表示自动计算为空间范围的 1%）
+    frontier_node_ratio: 0.1     # non-frontier 与 frontier 节点比例
+    # Connect 相关
+    enable_connect: true         # 启用双向 Connect（从 start 与 goal 同时生长并尝试连接）
+
+# 如果你需要更细粒度控制（如 rewire 频率、goal_tolerance 等），告诉我我可以把这些参数也加入 YAML 并在代码中读取
+
+# 为每个规划组配置
+r_arm:
+  planner_configs:
+    - ImprovedRRT
+  projection_evaluator: joints(r_joint1,r_joint2)
+  longest_valid_segment_fraction: 0.005
+
+l_arm:
+  planner_configs:
+    - ImprovedRRT
+  projection_evaluator: joints(l_joint1,l_joint2)
+  longest_valid_segment_fraction: 0.005
+
+# 如果你需要在 move_group 中启用 Connect，请把 enable_connect: true 写在上述 ImprovedRRT 配置里

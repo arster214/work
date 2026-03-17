@@ -1,0 +1,22 @@
+Panels:
+  - Class: rviz/Displays
+    Name: Displays
+Visualization Manager:
+  Displays:
+    - Class: rviz/Grid
+      Name: Grid
+      Enabled: true
+    - Class: rviz/RobotModel
+      Name: RobotModel
+      Robot Description: robot_description
+      Enabled: true
+    - Class: rviz/PointCloud2
+      Name: Camera Points
+      Topic: /camera_r/depth/points
+      Enabled: true
+    - Class: octomap_rviz_plugin/OccupancyMap
+      Name: Octomap
+      Topic: /octomap_full
+      Enabled: true
+  Global Options:
+    Fixed Frame: base_footprint

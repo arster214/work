@@ -1,0 +1,5 @@
+Symlinking /home/fang/catkin_wsfrj/devel/lib/pkgconfig/d435_demo.pc
+Symlinking /home/fang/catkin_wsfrj/devel/lib/d435_demo/video_stream_sub.py
+Symlinking /home/fang/catkin_wsfrj/devel/lib/d435_demo/video_stream_pub.py
+Symlinking /home/fang/catkin_wsfrj/devel/share/d435_demo/cmake/d435_demoConfig.cmake
+Symlinking /home/fang/catkin_wsfrj/devel/share/d435_demo/cmake/d435_demoConfig-version.cmake

@@ -1,0 +1,91 @@
+
+<launch>
+  <!-- 
+      该文件参考 moveit_planning_execution.launch 编写，用于加载实际机器人并集成静态 Octomap。
+      功能：
+      1. 启动左/右臂真实驱动 (arm_driver)
+      2. 聚合关节状态 (joint_state_publisher) 并发布机器人模型 (robot_state_publisher)
+      3. 启动 MoveIt 核心 (move_group)
+      4. 运行 load_octomap_to_moveit.py 用于将已保存的地图加载到规划场景中
+  -->
+
+  <!-- 机械臂连接参数 -->
+  <arg name="R_Arm_IP"                   default="169.254.128.19"/>
+  <arg name="R_Arm_Port"                 default="8080"/>
+  <arg name="L_Arm_IP"                   default="169.254.128.18"/>
+  <arg name="L_Arm_Port"                 default="8080"/>
+  <arg name="Arm_Dof"                  default="7"/>
+  <arg name="Arm_Type"                 default="RM75"/>
+  <arg name="Follow"                   default="false"/>
+  <arg name="Udp_IP"                   default="169.254.128.20"/>
+  <arg name="R_Udp_Port"                 default="8089"/>
+  <arg name="L_Udp_Port"                 default="8099"/>
+  <arg name="Udp_cycle"                default="5"/>
+  <arg name="Udp_force_coordinate"     default="0"/>
+
+  <!-- 1. 启动实兵驱动与控制节点 -->
+  <node ns="r_arm" pkg="arm_control" name="arm_control" type="arm_control" output="screen">
+      <param name="Arm_Dof" value="$(arg Arm_Dof)"/>  
+  </node>
+  <node ns="l_arm" pkg="arm_control" name="arm_control" type="arm_control" output="screen">
+      <param name="Arm_Dof" value="$(arg Arm_Dof)"/>  
+  </node>
+
+  <!-- 右臂驱动 -->
+  <node ns="r_arm" name="arm_driver" pkg="arm_driver" type="arm_driver" output="screen" respawn="false">
+      <param name="Arm_IP"                value="$(arg R_Arm_IP)"/> 
+      <param name="Arm_Port"              value="$(arg R_Arm_Port)"/>   
+      <param name="Arm_Dof"               value="$(arg Arm_Dof)"/>   
+      <param name="Arm_Type"              value="$(arg Arm_Type)"/> 
+      <param name="Follow"                value="$(arg Follow)"/>  
+      <param name="Udp_IP"                value="$(arg Udp_IP)"/>   
+      <param name="Udp_Port"              value="$(arg R_Udp_Port)"/>  
+      <param name="Udp_cycle"             value="$(arg Udp_cycle)"/>  
+      <param name="Udp_force_coordinate"  value="$(arg Udp_force_coordinate)"/>  
+      <rosparam param="arm_joints">[r_joint1, r_joint2, r_joint3, r_joint4, r_joint5, r_joint6, r_joint7]</rosparam>
+  </node>
+
+  <!-- 左臂驱动 -->
+  <node ns="l_arm" name="arm_driver" pkg="arm_driver" type="arm_driver" output="screen" respawn="false">
+      <param name="Arm_IP"                value="$(arg L_Arm_IP)"/> 
+      <param name="Arm_Port"              value="$(arg L_Arm_Port)"/>   
+      <param name="Arm_Dof"               value="$(arg Arm_Dof)"/>   
+      <param name="Arm_Type"              value="$(arg Arm_Type)"/> 
+      <param name="Follow"                value="$(arg Follow)"/>  
+      <param name="Udp_IP"                value="$(arg Udp_IP)"/>   
+      <param name="Udp_Port"              value="$(arg L_Udp_Port)"/>  
+      <param name="Udp_cycle"             value="$(arg Udp_cycle)"/>  
+      <param name="Udp_force_coordinate"  value="$(arg Udp_force_coordinate)"/>  
+      <rosparam param="arm_joints">[l_joint1, l_joint2, l_joint3, l_joint4, l_joint5, l_joint6, l_joint7]</rosparam>
+  </node>
+
+  <!-- 2. 状态发布 -->
+  <!-- 加载机器人 URDF 模型 -->
+  <param name="robot_description" command="xacro '$(find overseas_75_b_v_description)/urdf/overseas_75_b_v_description_rmg24.urdf.xacro'" />
+
+  <!-- 聚合关节状态 -->
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+      <rosparam param="source_list">[/l_arm/joint_states, /r_arm/joint_states, /head/joint_states, /lift_joint_states]</rosparam>
+  </node>
+
+  <!-- 发布 TF 树 -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+  <node pkg="map_build" type="lift_to_joint_state.py" name="lift_to_joint_state" output="screen"/>
+            
+  <!-- 3. 启动 MoveIt! 相关 -->
+  <include file="$(find dual_75b_arm_rmg24_moveit_config)/launch/move_group.launch">
+    <arg name="allow_trajectory_execution" value="true"/>
+    <arg name="info" value="true"/>
+    <arg name="load_robot_description" value="false"/>
+  </include>
+
+  <!-- 启动 RViz -->
+  <include file="$(find dual_75b_arm_rmg24_moveit_config)/launch/moveit_rviz.launch">
+  <arg name="rviz_config" value="$(find dual_75b_arm_rmg24_moveit_config)/launch/moveit.rviz"/>
+  </include>
+
+  <!-- 4. 地图加载到 MoveIt -->
+  <!-- 运行脚本加载最新的 .bt 地图文件，该脚本会发布到 /planning_scene 话题 -->
+  <node name="octomap_loader" pkg="real_robot_deployer" type="load_octomap_to_moveit.py" output="screen" />
+
+</launch>

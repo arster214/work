@@ -1,0 +1,158 @@
+<launch>
+    <arg name="octomap_frame" default="base_link_underpan" doc="地图的全局参考坐标系"/>
+    <arg name="shared_topic"  default="/combined_cloud_in" doc="所有相机点云汇聚的话题"/>
+    <arg name="map_resolution" default="0.01" doc="Octomap 分辨率"/>
+
+
+    <arg name="map_min_z" default="0.5" doc="地图高度最小裁剪 (去除地面)"/>
+    <arg name="map_max_z" default="1.8"  doc="地图高度最大裁剪 (去除天花板)"/>
+    <arg name="map_min_x" default="-1.0" doc="地图长(前/后)最小" />
+    <arg name="map_max_x" default="1.0"  doc="地图长(前/后)最大" />
+    <arg name="map_min_y" default="-1.4" doc="地图宽(左/右)最小" />
+    <arg name="map_max_y" default="1.4"  doc="地图宽(左/右)最大" />
+
+
+    <arg name="cloud_min_z" default="0.15" doc="最小深度距离 (太近的点会被忽略)"/>
+    <arg name="cloud_max_z" default="0.7" doc="最大深度距离 (太远的点会被忽略)"/>   
+    <arg name="cloud_min_x" default="-0.7" doc="X轴最小范围"/>
+    <arg name="cloud_max_x" default="0.7" doc="X轴最大范围"/>
+    <arg name="cloud_min_y" default="-0.8" doc="Y轴最小范围"/>
+    <arg name="cloud_max_y" default="0.8" doc="Y轴最大范围"/>
+
+    <arg name="serial_left"  default="334622072495"/>
+    <arg name="serial_right" default="335522073266"/> 
+    <arg name="serial_head"  default="344322074948"/> 
+    <include file="$(find map_build)/launch/octomap_from_d435_left.launch">
+        <arg name="serial_no"       value="$(arg serial_left)"/>
+        <arg name="camera_name"     value="camera_l"/>
+        <arg name="tf_parent_frame" value="l_link7"/>
+        <arg name="octomap_frame"   value="$(arg octomap_frame)"/> 
+        <arg name="pass_z_min"      value="$(arg cloud_min_z)"/>
+        <arg name="pass_z_max"      value="$(arg cloud_max_z)"/>
+        <arg name="pass_x_min"      value="$(arg cloud_min_x)"/>
+        <arg name="pass_x_max"      value="$(arg cloud_max_x)"/>
+        <arg name="pass_y_min"      value="$(arg cloud_min_y)"/>
+        <arg name="pass_y_max"      value="$(arg cloud_max_y)"/>
+    </include>
+
+    <include file="$(find map_build)/launch/octomap_from_d435_right.launch">
+        <arg name="serial_no"           value="$(arg serial_right)"/>
+        <arg name="camera_name"         value="camera_r"/>
+        <arg name="tf_parent_frame"     value="r_link7"/>
+        <arg name="octomap_frame"       value="$(arg octomap_frame)"/> 
+        <arg name="pass_z_min"          value="$(arg cloud_min_z)"/>
+        <arg name="pass_z_max"          value="$(arg cloud_max_z)"/>
+        <arg name="pass_x_min"          value="$(arg cloud_min_x)"/>
+        <arg name="pass_x_max"          value="$(arg cloud_max_x)"/>
+        <arg name="pass_y_min"          value="$(arg cloud_min_y)"/>
+        <arg name="pass_y_max"          value="$(arg cloud_max_y)"/>
+    </include>
+
+    <include file="$(find map_build)/launch/octomap_from_head_d435.launch">
+        <arg name="serial_no"       value="$(arg serial_head)"/>
+        <arg name="camera_name"     value="camera_head"/>
+        <arg name="pass_z_min"      value="$(arg cloud_min_z)"/>
+        <arg name="pass_z_max"      value="$(arg cloud_max_z)"/>
+        <arg name="pass_x_min"      value="$(arg cloud_min_x)"/>
+        <arg name="pass_x_max"      value="$(arg cloud_max_x)"/>
+        <arg name="pass_y_min"      value="$(arg cloud_min_y)"/>
+        <arg name="pass_y_max"      value="$(arg cloud_max_y)"/>
+    </include>
+
+    <arg name="publish_robot_state" default="true" doc="是否启动 robot_state_publisher 以发布机器人 TF"/>
+    
+    <group if="$(arg publish_robot_state)">
+        <param name="robot_description" command="xacro '$(find overseas_75_b_v_description)/urdf/overseas_75_b_v_description_rmg24.urdf.xacro'" />
+
+        <!-- 驱动选择逻辑 -->
+        <arg name="use_real_driver" default="true" doc="是否启动真实机械臂驱动"/>
+
+        <!-- 机械臂连接参数 -->
+        <arg name="R_Arm_IP"                   default="169.254.128.19"/>
+        <arg name="R_Arm_Port"                 default="8080"/>
+        <arg name="L_Arm_IP"                   default="169.254.128.18"/>
+        <arg name="L_Arm_Port"                 default="8080"/>
+        <arg name="Arm_Dof"                  default="7"/>
+        <arg name="Arm_Type"                 default="RM75"/>
+        <arg name="Follow"                   default="false"/>
+        <arg name="Udp_IP"                   default="169.254.128.20"/>
+        <arg name="R_Udp_Port"                 default="8089"/>
+        <arg name="L_Udp_Port"                 default="8099"/>
+        <arg name="Udp_cycle"                default="5"/>
+        <arg name="Udp_force_coordinate"     default="0"/>
+
+        <group if="$(arg use_real_driver)">
+            <node ns="r_arm" pkg="arm_control" name="arm_control" type="arm_control" output="screen">
+                <param name="Arm_Dof" value="$(arg Arm_Dof)"/>  
+            </node>
+            <node ns="l_arm" pkg="arm_control" name="arm_control" type="arm_control" output="screen">
+                <param name="Arm_Dof" value="$(arg Arm_Dof)"/>  
+            </node>
+
+            <!-- 右臂驱动 -->
+            <node ns="r_arm" name="arm_driver" pkg="arm_driver" type="arm_driver" output="screen" respawn="false">
+                <param name="Arm_IP"                value="$(arg R_Arm_IP)"/> 
+                <param name="Arm_Port"              value="$(arg R_Arm_Port)"/>   
+                <param name="Arm_Dof"               value="$(arg Arm_Dof)"/>   
+                <param name="Arm_Type"              value="$(arg Arm_Type)"/> 
+                <param name="Follow"                value="$(arg Follow)"/>  
+                <param name="Udp_IP"                value="$(arg Udp_IP)"/>   
+                <param name="Udp_Port"              value="$(arg R_Udp_Port)"/>  
+                <param name="Udp_cycle"             value="$(arg Udp_cycle)"/>  
+                <param name="Udp_force_coordinate"  value="$(arg Udp_force_coordinate)"/>  
+                <rosparam param="arm_joints">[r_joint1, r_joint2, r_joint3, r_joint4, r_joint5, r_joint6, r_joint7]</rosparam>
+            </node>
+
+            <!-- 左臂驱动 -->
+            <node ns="l_arm" name="arm_driver" pkg="arm_driver" type="arm_driver" output="screen" respawn="false">
+                <param name="Arm_IP"                value="$(arg L_Arm_IP)"/> 
+                <param name="Arm_Port"              value="$(arg L_Arm_Port)"/>   
+                <param name="Arm_Dof"               value="$(arg Arm_Dof)"/>   
+                <param name="Arm_Type"              value="$(arg Arm_Type)"/> 
+                <param name="Follow"                value="$(arg Follow)"/>  
+                <param name="Udp_IP"                value="$(arg Udp_IP)"/>   
+                <param name="Udp_Port"              value="$(arg L_Udp_Port)"/>  
+                <param name="Udp_cycle"             value="$(arg Udp_cycle)"/>  
+                <param name="Udp_force_coordinate"  value="$(arg Udp_force_coordinate)"/>  
+                <rosparam param="arm_joints">[l_joint1, l_joint2, l_joint3, l_joint4, l_joint5, l_joint6, l_joint7]</rosparam>
+            </node>
+
+            <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+                <rosparam param="source_list">[/l_arm/joint_states, /r_arm/joint_states,/head/joint_states,/lift_joint_states]</rosparam>
+            </node>
+
+            <!-- 启动升降柱状态发布节点 -->
+            <node pkg="map_build" type="lift_to_joint_state.py" name="lift_to_joint_state" output="screen"/>
+            
+            <!-- 手动控制点云生成节点 -->
+            <node pkg="map_build" type="manual_cloud_control.py" name="manual_cloud_control" output="screen" launch-prefix="xterm -e"/> 
+        </group>
+
+        <!-- 启动 robot_state_publisher (发布 TF) -->
+        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+    </group>
+
+    <node pkg="octomap_server" type="octomap_server_node" name="octomap_server" output="screen">
+        <param name="frame_id" type="string" value="$(arg octomap_frame)"/>
+        
+        <param name="resolution" value="$(arg map_resolution)"/>
+        
+        <remap from="cloud_in" to="$(arg shared_topic)"/>
+        
+    <param name="sensor_model/max_range" value="2.8"/>
+        
+        <param name="sensor_model/hit" value="0.7"/>
+        <param name="sensor_model/miss" value="0.4"/>
+        <param name="sensor_model/min" value="0.12"/>
+        <param name="sensor_model/max" value="0.97"/>
+        
+        <param name="latch" value="false"/> 
+    </node>
+
+    <!-- 暂时关闭 Octomap 后处理滤波，直接使用原始 Octomap 以测试处理速度 -->
+
+    <!-- 启动 RViz 并加载配置 -->
+    <arg name="use_rviz" default="true" />
+    <node if="$(arg use_rviz)" name="rviz" pkg="rviz" type="rviz" args="-d $(find map_build)/config/build_master.rviz" />
+
+</launch>

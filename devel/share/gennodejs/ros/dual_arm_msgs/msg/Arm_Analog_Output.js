@@ -1,0 +1,1 @@
+/home/fang/catkin_wsfrj/devel/.private/dual_arm_msgs/share/gennodejs/ros/dual_arm_msgs/msg/Arm_Analog_Output.js

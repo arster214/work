@@ -1,0 +1,42 @@
+[35m[1mScanning dependencies of target std_msgs_generate_messages_cpp[0m
+[  0%] Built target std_msgs_generate_messages_cpp
+[35m[1mScanning dependencies of target _servo_ros_generate_messages_check_deps_ServoMove[0m
+[  0%] Built target _servo_ros_generate_messages_check_deps_ServoMove
+[35m[1mScanning dependencies of target _servo_ros_generate_messages_check_deps_ServoAngle[0m
+[  0%] Built target _servo_ros_generate_messages_check_deps_ServoAngle
+[35m[1mScanning dependencies of target std_msgs_generate_messages_lisp[0m
+[  0%] Built target std_msgs_generate_messages_lisp
+[35m[1mScanning dependencies of target std_msgs_generate_messages_py[0m
+[  0%] Built target std_msgs_generate_messages_py
+[35m[1mScanning dependencies of target std_msgs_generate_messages_nodejs[0m
+[  0%] Built target std_msgs_generate_messages_nodejs
+[35m[1mScanning dependencies of target std_msgs_generate_messages_eus[0m
+[  0%] Built target std_msgs_generate_messages_eus
+[35m[1mScanning dependencies of target servo_ros_generate_messages_cpp[0m
+[35m[1mScanning dependencies of target servo_ros_generate_messages_lisp[0m
+[  7%] [34m[1mGenerating C++ code from servo_ros/ServoAngle.msg[0m
+[ 14%] [34m[1mGenerating Lisp code from servo_ros/ServoAngle.msg[0m
+[35m[1mScanning dependencies of target servo_ros_generate_messages_py[0m
+[ 21%] [34m[1mGenerating Lisp code from servo_ros/ServoMove.msg[0m
+[ 28%] [34m[1mGenerating Python from MSG servo_ros/ServoAngle[0m
+[ 28%] Built target servo_ros_generate_messages_lisp
+[35m[1mScanning dependencies of target servo_ros_generate_messages_nodejs[0m
+[ 35%] [34m[1mGenerating Javascript code from servo_ros/ServoAngle.msg[0m
+[ 42%] [34m[1mGenerating C++ code from servo_ros/ServoMove.msg[0m
+[ 50%] [34m[1mGenerating Javascript code from servo_ros/ServoMove.msg[0m
+[ 57%] [34m[1mGenerating Python from MSG servo_ros/ServoMove[0m
+[ 57%] Built target servo_ros_generate_messages_nodejs
+[35m[1mScanning dependencies of target servo_ros_generate_messages_eus[0m
+[ 57%] Built target servo_ros_generate_messages_cpp
+[ 64%] [34m[1mGenerating EusLisp code from servo_ros/ServoAngle.msg[0m
+[ 71%] [34m[1mGenerating Python msg __init__.py for servo_ros[0m
+[ 78%] [34m[1mGenerating EusLisp code from servo_ros/ServoMove.msg[0m
+[ 85%] [34m[1mGenerating EusLisp manifest code for servo_ros[0m
+[ 85%] Built target servo_ros_generate_messages_py
+[35m[1mScanning dependencies of target servo_controller[0m
+[ 92%] [32mBuilding CXX object CMakeFiles/servo_controller.dir/src/servo_controller.cpp.o[0m
+[ 92%] Built target servo_ros_generate_messages_eus
+[100%] [32m[1mLinking CXX executable /home/fang/catkin_wsfrj/devel/.private/servo_ros/lib/servo_ros/servo_controller[0m
+[100%] Built target servo_controller
+[35m[1mScanning dependencies of target servo_ros_generate_messages[0m
+[100%] Built target servo_ros_generate_messages

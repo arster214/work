@@ -1,0 +1,8 @@
+prefix=/home/fang/catkin_wsfrj/devel/.private/map_build
+
+Name: map_build
+Description: Description of map_build
+Version: 0.0.1
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

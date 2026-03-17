@@ -1,0 +1,26 @@
+<launch>
+  <!-- 启动 Gazebo + MoveIt -->
+      <include file="$(find dual_75b_arm_gazebo)/launch/arm_75_bringup_moveit_rmg24.launch"/>
+  <node pkg="improved_rrt_planner" type="publish_wheel_states.py" name="agv_wheel_publisher" output="screen" />
+  <!-- 参数：是否在 Gazebo 中显示障碍物 -->
+  <arg name="use_gazebo" default="true"/>
+  
+  <!-- 等待 Gazebo 和 MoveIt 完全启动 -->
+  <arg name="wait_time" default="15"/>
+  
+  <!-- 启动桌子和物体障碍物节点（仅 MoveIt） -->
+  <node pkg="table_obstacles"
+        type="add_table_obstacles.py"
+        name="add_table_obstacles"
+        output="screen"
+        launch-prefix="bash -c 'sleep $(arg wait_time); exec $0 $@' "
+        unless="$(arg use_gazebo)"/>
+  
+  <!-- 启动桌子和物体障碍物节点（Gazebo + MoveIt） -->
+  <node pkg="table_obstacles"
+        type="add_table_obstacles_gazebo.py"
+        name="add_table_obstacles_gazebo"
+        output="screen"
+        launch-prefix="bash -c 'sleep $(arg wait_time); exec $0 $@' "
+        if="$(arg use_gazebo)"/>
+</launch>

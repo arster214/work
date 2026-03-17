@@ -1,0 +1,8 @@
+prefix=/home/fang/catkin_wsfrj/install
+
+Name: octomap_env_processor_deprecated
+Description: Description of octomap_env_processor_deprecated
+Version: 0.0.1
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

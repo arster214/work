@@ -1,0 +1,8 @@
+prefix=/home/fang/catkin_wsfrj/devel/.private/dual_75b_arm_gazebo
+
+Name: dual_75b_arm_gazebo
+Description: Description of dual_75b_arm_gazebo
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

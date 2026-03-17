@@ -1,0 +1,26 @@
+<launch>
+
+    <!-- 包含 servo_start.launch 启动舵机-->
+    <include file="$(find servo_ros)/launch/servo_start.launch"/>
+
+    <!-- 包含 dual_arm_driver.launch 启动机械臂-->
+    <include file="$(find arm_driver)/launch/dual_arm_75_driver.launch"/>
+
+        <!-- 包含 d435_pub.launch 启动d435相机-->
+    <include file="$(find d435_demo)/launch/d435_pub.launch">
+            <arg name="idx" value="0"/>
+    </include>
+
+    <!-- 包含 usb_camera_demo.launch 启动usb相机-->
+    <include file="$(find usb_camera_demo)/launch/usb_camera_pub.launch">
+            <arg name="idx" value="0"/>
+    </include>
+
+    <!-- 包含 底盘导航-->
+    <node pkg="agv_demo" name="agv_demo" type="agv_demo.py" cwd="node" output="screen"/> 
+
+    <node pkg="dual_arm_robot_demo" name="robot_demo" type="use_75_demo_all.py" cwd="node" output="screen"/>
+
+</launch>
+
+

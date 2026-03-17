@@ -1,0 +1,4 @@
+#舵机转动控制
+uint16 servo_id	#舵机ID
+uint16 angle	#角度位置0~1000
+uint16 time     #运行时间(ms)

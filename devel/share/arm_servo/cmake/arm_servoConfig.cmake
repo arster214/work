@@ -1,0 +1,1 @@
+/home/fang/catkin_wsfrj/devel/.private/arm_servo/share/arm_servo/cmake/arm_servoConfig.cmake

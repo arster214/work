@@ -1,0 +1,11 @@
+<launch>
+    <!-- 包含 底盘导航-->
+    <node pkg="agv_demo" name="agv_demo" type="agv_demo.py" cwd="node" output="screen"/> 
+    
+    <include file="$(find arm_driver)/launch/dual_arm_65_driver.launch"/>
+    <env name="PYTHONPATH" value="$(find dual_arm_robot_demo)/scripts:$(env PYTHONPATH)"/>
+    <node pkg="tf2_ros" type="static_transform_publisher" name="camera" args="-0.0974 0.041261 -0.005  0.04798 -0.0376 -0.677 0.73  /end /camera" output="screen" />
+    <node pkg="dual_arm_robot_demo" name="model_detect" type="detect_object.py" cwd="node" output="screen"/>
+    <node pkg="dual_arm_robot_demo" name="pose_pub" type="pose_udp.py" cwd="node" output="screen"/>
+    <node pkg="dual_arm_robot_demo" name="catch" type="catch2object_grippers.py" cwd="node" output="screen"/>
+</launch>

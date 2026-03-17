@@ -1,0 +1,8 @@
+prefix=/home/fang/catkin_wsfrj/install
+
+Name: usb_camera_demo
+Description: Description of usb_camera_demo
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

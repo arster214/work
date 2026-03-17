@@ -1,0 +1,1 @@
+/home/fang/catkin_wsfrj/devel/.private/dual_arm_msgs/share/roseus/ros/dual_arm_msgs/msg/Servo_GetAngle.l

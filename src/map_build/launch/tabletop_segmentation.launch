@@ -1,0 +1,15 @@
+<launch>
+    <!-- Default bt_file_path is empty; will process combined_cloud_in if empty -->
+    <arg name="bt_file_path" default=""/>
+    
+    <node pkg="map_build" type="tabletop_segmentation_node" name="tabletop_segmentation_node" output="screen">
+        <param name="bt_file_path" value="$(arg bt_file_path)"/>
+        <param name="frame_id" value="base_link_underpan"/>
+        <param name="z_min" value="0.5"/> 
+        <param name="z_max" value="1.5"/>
+        <param name="plane_distance_thresh" value="0.02"/>
+        <param name="cluster_tolerance" value="0.04"/>
+        <param name="min_cluster_size" value="50"/>
+        <param name="publish_moveit_collision" value="true"/>
+    </node>
+</launch>

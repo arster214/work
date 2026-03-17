@@ -1,0 +1,1 @@
+/home/fang/catkin_wsfrj/devel/.private/dual_arm_robot_demo/share/gennodejs/ros/dual_arm_robot_demo/msg/ObjectPose.js

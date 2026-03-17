@@ -1,0 +1,28 @@
+Panels:
+  - Class: rviz/Displays
+    Name: Displays
+Visualization Manager:
+  Displays:
+    - Class: rviz/Grid
+      Name: Grid
+      Enabled: true
+    - Class: rviz/RobotModel
+      Name: RobotModel
+      Robot Description: robot_description
+      Enabled: true
+    - Class: rviz/MarkerArray
+      Name: MarkerArray
+      Marker Topic: /occupied_cells_vis_array
+      Enabled: true
+  Global Options:
+    Fixed Frame: base_link_underpan
+  Tools:
+    - Class: rviz/Interact
+    - Class: rviz/MoveCamera
+    - Class: rviz/Select
+    - Class: rviz/FocusCamera
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Name: Current View
+      Target Frame: <Fixed Frame>

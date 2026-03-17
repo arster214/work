@@ -1,0 +1,8 @@
+(cl:in-package dual_arm_msgs-msg)
+(cl:export '(JOINT-VAL
+          JOINT
+          SPEED-VAL
+          SPEED
+          TRAJECTORY_CONNECT-VAL
+          TRAJECTORY_CONNECT
+))

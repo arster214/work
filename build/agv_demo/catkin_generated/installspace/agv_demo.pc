@@ -1,0 +1,8 @@
+prefix=/home/fang/catkin_wsfrj/install
+
+Name: agv_demo
+Description: Description of agv_demo
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

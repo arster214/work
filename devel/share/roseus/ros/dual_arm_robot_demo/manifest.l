@@ -1,0 +1,1 @@
+/home/fang/catkin_wsfrj/devel/.private/dual_arm_robot_demo/share/roseus/ros/dual_arm_robot_demo/manifest.l

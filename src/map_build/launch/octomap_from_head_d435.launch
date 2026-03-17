@@ -1,0 +1,58 @@
+<launch>
+    <arg name="camera_name" default="camera_head"/>
+    <arg name="serial_no" default="344322074948"/>
+
+    <arg name="pass_z_min" default="0.1"/>
+    <arg name="pass_z_max" default="2.5"/>
+    <arg name="pass_x_min" default="-1.0"/>
+    <arg name="pass_x_max" default="1.0"/>
+    <arg name="pass_y_min" default="-1.5"/>
+    <arg name="pass_y_max" default="1.5"/>
+    
+    <group ns="head_servo">
+        <node pkg="servo_ros" type="servo_controller" name="servo_driver" output="screen">
+        </node>
+        <node pkg="servo_demo" type="servo_to_joint_state.py" name="head_joint_publisher" output="screen">
+        </node>
+    </group>
+
+    <node pkg="tf" type="static_transform_publisher" name="head_camera_optical_tf"
+        args="0 0 0 0 0.7071 -0.7071 0  camera_link $(arg camera_name)_depth_optical_frame 100" />
+
+    <node pkg="map_build" type="simple_d435_driver.py" name="$(arg camera_name)_driver" output="screen" launch-prefix="bash -c 'sleep 6; $0 $@' ">
+        <param name="serial_no" value="$(arg serial_no)" type="str"/>
+        <param name="camera_name" value="$(arg camera_name)"/>
+        <param name="width" value="640"/>
+        <param name="height" value="480"/>
+        <param name="fps" value="15"/>
+    </node>
+
+    <node pkg="map_build" type="point_process" name="$(arg camera_name)_processor" output="screen">
+        
+        <remap from="depth/image_raw" to="/$(arg camera_name)/depth/image_raw"/>
+        <remap from="depth/camera_info" to="/$(arg camera_name)/depth/camera_info"/>
+        <!-- 输出话题重映射到统一话题 -->
+        <remap from="depth/points_processed" to="/combined_cloud_in"/>
+
+        <param name="use_voxel_filter" value="false"/>
+        <param name="voxel_leaf_size" value="0.04"/> 
+
+        <param name="use_sor_filter" value="true"/>
+        <param name="sor_mean_k" value="50"/>
+        <param name="sor_stddev_mul" value="1.0"/>
+        
+        <param name="depth_scale" value="0.001"/>
+
+        <!-- 传入裁减参数 -->
+    <param name="use_pass_filter" value="true"/>
+        <param name="pass_z_min" value="$(arg pass_z_min)"/>
+        <param name="pass_z_max" value="$(arg pass_z_max)"/>
+        <param name="pass_x_min" value="$(arg pass_x_min)"/>
+        <param name="pass_x_max" value="$(arg pass_x_max)"/>
+        <param name="pass_y_min" value="$(arg pass_y_min)"/>
+        <param name="pass_y_max" value="$(arg pass_y_max)"/>
+
+    </node>
+
+</launch>
+

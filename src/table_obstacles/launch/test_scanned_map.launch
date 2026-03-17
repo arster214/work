@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Bring up Gazebo + MoveIt just like add_table.launch -->
+  <include file="$(find dual_75b_arm_gazebo)/launch/arm_75_bringup_moveit_rmg24.launch"/>
+  <node pkg="improved_rrt_planner" type="publish_wheel_states.py" name="agv_wheel_publisher" output="screen" />
+
+  <!-- Startup timing -->
+  <arg name="wait_time" default="15"/>
+
+  <!-- Core mode switch: "voxel_rrt" or "aabb_apf" -->
+  <arg name="obstacle_avoidance_mode" default="aabb_apf" />
+  <!-- Set global param for planner -->
+  <param name="obstacle_avoidance_mode" value="$(arg obstacle_avoidance_mode)" />
+
+  <!-- Scanned map source -->
+  <arg name="map_workdir" default="/home/fang/catkin_ws/map"/>
+  <arg name="map_file" default="$(arg map_workdir)/hard.bt"/>
+
+  <!-- Frames / topics -->
+  <arg name="frame_id" default="base_link_underpan"/>
+  <arg name="octomap_topic" default="/octomap_full"/>
+  <arg name="planning_scene_publish_rate" default="1.0"/>
+  <arg name="marker_topic" default="/octomap_processed_markers"/>
+  <!-- Set to false to see the bounding boxes in RViz -->
+  <arg name="disable_markers" default="false"/>
+
+  <!-- map_process outputs -->
+  <arg name="cleaned_bt" default="cleaned_map.bt"/>
+  <arg name="processed_bt_file" default="$(arg map_workdir)/$(arg cleaned_bt)"/>
+  <arg name="output_xyz" default="occupied_voxels_hard.xyz"/>
+  <arg name="output_json" default="segmentation_hard.json"/>
+  <arg name="hide_raw_voxels" default="false"/>
+  <arg name="once" default="false"/>
+  <arg name="process_rate" default="1.0"/>
+
+  <!-- Segmentation params -->
+  <arg name="table_min_z" default="0.4" />
+  <arg name="table_max_z" default="1.1" />
+  <arg name="plane_distance" default="0.03" />
+  <arg name="workspace_xy_margin" default="0.03" />
+  <arg name="workspace_z_min_offset" default="-0.02" />
+    <arg name="workspace_z_max_height" default="1.00" />
+  <arg name="workspace_cluster_radius_scale" default="3.0" />
+  <arg name="workspace_min_cluster_voxels" default="20" />
+  <arg name="camera_quadrant" default="neg_xy" />
+  <arg name="support_gap_max" default="0.5" />
+  <arg name="flyer_min_neighbors" default="1" />
+  <arg name="flyer_radius_scale" default="1.05" />
+  <arg name="no_snap_obstacles_to_table" default="false" />
+
+  <!-- 1) Run map_process first: generate cleaned bt/json; markers disabled by default -->
+  <node
+    pkg="map_process"
+    type="process_octomap_markers.py"
+    name="map_process"
+    output="screen"
+    launch-prefix="bash -c 'sleep $(arg wait_time); $0 $@' "
+    args="--workdir $(arg map_workdir) --input-bt $(arg map_file) --cleaned-bt $(arg cleaned_bt) --output-xyz $(arg output_xyz) --output-json $(arg output_json) --frame-id $(arg frame_id) --marker-topic $(arg marker_topic) --table-min-z $(arg table_min_z) --table-max-z $(arg table_max_z) --plane-distance $(arg plane_distance) --workspace-xy-margin $(arg workspace_xy_margin) --workspace-z-min-offset $(arg workspace_z_min_offset) --workspace-z-max-height $(arg workspace_z_max_height) --workspace-cluster-radius-scale $(arg workspace_cluster_radius_scale) --workspace-min-cluster-voxels $(arg workspace_min_cluster_voxels) --camera-quadrant $(arg camera_quadrant) --support-gap-max $(arg support_gap_max) --flyer-min-neighbors $(arg flyer_min_neighbors) --flyer-radius-scale $(arg flyer_radius_scale) --hide-raw-voxels $(arg hide_raw_voxels) --no-snap-obstacles-to-table $(arg no_snap_obstacles_to_table) --disable-markers $(arg disable_markers) --once $(arg once) --rate $(arg process_rate)"
+  >
+    <param name="obstacle_avoidance_mode" value="$(arg obstacle_avoidance_mode)" />
+  </node>
+
+  <!-- 2) Wait until cleaned_map.bt exists, then start octomap_server using the processed map -->
+  <node name="wait_and_start_octomap_server"
+        pkg="table_obstacles"
+        type="wait_and_start_octomap_server.py"
+    output="screen">
+    <param name="frame_id" value="$(arg frame_id)"/>
+    <param name="bt_file" value="$(arg processed_bt_file)"/>
+    <param name="wait_timeout" value="180.0"/>
+  </node>
+
+  <!-- 3) Feed octomap_server output into MoveIt PlanningScene -->
+  <node name="publish_map_to_moveit"
+        pkg="table_obstacles"
+        type="publish_map_to_moveit.py"
+        output="screen"
+        cwd="node">
+    <param name="octomap_topic" value="$(arg octomap_topic)"/>
+    <param name="publish_rate" value="$(arg planning_scene_publish_rate)"/>
+  </node>
+</launch>

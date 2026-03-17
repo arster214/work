@@ -1,0 +1,8 @@
+prefix=/home/fang/catkin_wsfrj/devel/.private/planner_benchmark
+
+Name: planner_benchmark
+Description: Description of planner_benchmark
+Version: 1.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: rospy std_msgs geometry_msgs moveit_msgs moveit_core moveit_ros_planning_interface

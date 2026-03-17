@@ -1,0 +1,27 @@
+<launch>
+  <!-- Baseline RRT Planning Pipeline -->
+  
+  <!-- The request adapters (plugins) used when planning. ORDER MATTERS! -->
+  <arg name="planning_adapters"
+       default="default_planner_request_adapters/AddTimeOptimalParameterization
+                default_planner_request_adapters/ResolveConstraintFrames
+                default_planner_request_adapters/FixWorkspaceBounds
+                default_planner_request_adapters/FixStartStateBounds
+                default_planner_request_adapters/FixStartStateCollision
+                default_planner_request_adapters/FixStartStatePathConstraints" />
+
+  <arg name="start_state_max_bounds_error" default="0.1" />
+  <arg name="jiggle_fraction" default="0.05" />
+
+  <!-- Set the planning plugin -->
+  <param name="planning_plugin" value="baseline_rrt/BaselineRRTPlannerManager" />
+  
+  <!-- Load Baseline RRT planner configuration -->
+  <rosparam command="load" file="$(find dual_75b_arm_rmg24_moveit_config)/config/baseline_rrt_planning.yaml"/>
+  
+  <!-- Set request adapters -->
+  <param name="request_adapters" value="$(arg planning_adapters)" />
+  <param name="start_state_max_bounds_error" value="$(arg start_state_max_bounds_error)" />
+  <param name="jiggle_fraction" value="$(arg jiggle_fraction)" />
+
+</launch>

@@ -1,0 +1,1 @@
+/home/fang/catkin_wsfrj/devel/.private/table_obstacles/lib/table_obstacles/add_table_obstacles_gazebo.py

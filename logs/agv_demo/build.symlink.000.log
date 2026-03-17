@@ -1,0 +1,4 @@
+Symlinking /home/fang/catkin_wsfrj/devel/lib/pkgconfig/agv_demo.pc
+Symlinking /home/fang/catkin_wsfrj/devel/lib/agv_demo/agv_demo.py
+Symlinking /home/fang/catkin_wsfrj/devel/share/agv_demo/cmake/agv_demoConfig.cmake
+Symlinking /home/fang/catkin_wsfrj/devel/share/agv_demo/cmake/agv_demoConfig-version.cmake

@@ -1,0 +1,24 @@
+<launch>
+  <!-- DualArmRRT Planning Pipeline -->
+
+  <!-- The request adapters (plugins) used when planning. ORDER MATTERS! -->
+  <arg name="planning_adapters"
+       default="default_planner_request_adapters/AddTimeOptimalParameterization
+                default_planner_request_adapters/ResolveConstraintFrames
+                default_planner_request_adapters/FixWorkspaceBounds
+                default_planner_request_adapters/FixStartStateBounds
+                default_planner_request_adapters/FixStartStateCollision
+                default_planner_request_adapters/FixStartStatePathConstraints" />
+
+  <arg name="start_state_max_bounds_error" default="0.1" />
+  <arg name="jiggle_fraction" default="0.05" />
+
+  <!-- 加载 DualArmRRT 规划器配置 -->
+  <rosparam command="load" file="$(find dual_75b_arm_rmg24_moveit_config)/config/dual_rrt_planning.yaml"/>
+  
+  <!-- 设置请求适配器 -->
+  <param name="request_adapters" value="$(arg planning_adapters)" />
+  <param name="start_state_max_bounds_error" value="$(arg start_state_max_bounds_error)" />
+  <param name="jiggle_fraction" value="$(arg jiggle_fraction)" />
+
+</launch>

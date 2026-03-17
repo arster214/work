@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>planner_benchmark</name>
+  <version>1.0.0</version>
+  <description>
+    Benchmark and data collection tools for path planning algorithms.
+    Used for collecting experimental data for research papers.
+  </description>
+  
+  <maintainer email="user@todo.todo">User</maintainer>
+  <license>BSD</license>
+  
+  <buildtool_depend>catkin</buildtool_depend>
+  
+  <!-- Dependencies -->
+  <depend>rospy</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>moveit_msgs</depend>
+  <depend>moveit_core</depend>
+  <depend>moveit_ros_planning_interface</depend>
+  <depend>moveit_commander</depend>
+  
+  <!-- Python dependencies (for documentation) -->
+  <!-- numpy, matplotlib, pandas - install via pip if needed -->
+  
+  <export>
+  </export>
+</package>

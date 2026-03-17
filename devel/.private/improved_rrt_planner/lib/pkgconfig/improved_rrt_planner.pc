@@ -1,0 +1,8 @@
+prefix=/home/fang/catkin_wsfrj/devel/.private/improved_rrt_planner
+
+Name: improved_rrt_planner
+Description: Description of improved_rrt_planner
+Version: 1.0.0
+Cflags: 
+Libs: -L${prefix}/lib -limproved_rrt_planner
+Requires: moveit_core moveit_ros_planning pluginlib roscpp tf2_ros

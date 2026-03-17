@@ -1,0 +1,28 @@
+# Baseline RRT Planner Configuration
+planning_plugin: baseline_rrt/BaselineRRTPlannerManager
+
+# Planner configurations
+planner_configs:
+  BasicRRT:
+    range: 0.3  # Unified step size for fair comparison
+  BasicRRTStar:
+    range: 0.3  # Unified step size for fair comparison
+
+# Configuration for each planning group
+r_arm:
+  planner_configs:
+    - BasicRRT
+    - BasicRRTStar
+  projection_evaluator: joints(r_joint1,r_joint2)
+  longest_valid_segment_fraction: 0.005
+  default_planner_config: BasicRRT
+  planning_time_limit: 30.0  # Default planning time in seconds
+
+l_arm:
+  planner_configs:
+    - BasicRRT
+    - BasicRRTStar
+  projection_evaluator: joints(l_joint1,l_joint2)
+  longest_valid_segment_fraction: 0.005
+  default_planner_config: BasicRRT
+  planning_time_limit: 30.0  # Default planning time in seconds
