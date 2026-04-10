@@ -1,0 +1,395 @@
+diff --git a/src/dual_arm_rrt_planner/include/dual_arm_rrt_planner/local_trrt.h b/src/dual_arm_rrt_planner/include/dual_arm_rrt_planner/local_trrt.h
+--- a/src/dual_arm_rrt_planner/include/dual_arm_rrt_planner/local_trrt.h
++++ b/src/dual_arm_rrt_planner/include/dual_arm_rrt_planner/local_trrt.h
+@@
+   void setClearanceEvaluator(const std::function<double(const ompl::base::State*)>& clearance_evaluator)
+   {
+     clearanceEvaluator_ = clearance_evaluator;
+   }
+-
+-  void setHeatmapApfEnabled(bool enabled)
+-  {
+-    heatmapApfEnabled_ = enabled;
+-  }
+-
+-  void setHeatmapApfClearanceThreshold(double clearance_threshold)
+-  {
+-    heatmapApfClearanceThreshold_ = clearance_threshold;
+-  }
+-
+-  void setHeatmapApfGradientDelta(double gradient_delta)
+-  {
+-    heatmapApfGradientDelta_ = gradient_delta;
+-  }
+-
+-  void setHeatmapApfRepulsionWeight(double repulsion_weight)
+-  {
+-    heatmapApfRepulsionWeight_ = repulsion_weight;
+-  }
+-
+-  void setHeatmapApfTangentWeight(double tangent_weight)
+-  {
+-    heatmapApfTangentWeight_ = tangent_weight;
+-  }
+@@
+-  bool sampleExpansionTarget(Motion* random_motion, ompl::base::State* random_state,
+-                             ompl::base::State* interpolated_state, ompl::base::State* guided_state,
+-                             ompl::base::Goal* goal,
++  bool sampleExpansionTarget(Motion* random_motion, ompl::base::State* random_state,
++                             ompl::base::State* interpolated_state, ompl::base::Goal* goal,
+                              ompl::base::GoalSampleableRegion* goal_sampleable_region, const TreeData& tree,
+                              Motion*& nearest_motion, ompl::base::State*& new_state, double& motion_distance,
+                              bool allow_goal_bias);
+@@
+-  bool applyHeatmapApfGuidance(const ompl::base::State* current_state, const ompl::base::State* sampled_state,
+-                               ompl::base::State* guided_state) const;
+-
+-  std::vector<double> extractStateValues(const ompl::base::State* state) const;
+-
+-  void assignStateValues(const std::vector<double>& values, ompl::base::State* state) const;
+-
+-  std::vector<double> computeClearanceGradient(const ompl::base::State* state) const;
+-
+-  static double computeVectorNorm(const std::vector<double>& values);
+-
+-  static bool normalizeVector(std::vector<double>& values);
+-
+-  static double dotProduct(const std::vector<double>& left, const std::vector<double>& right);
+-
+-  static void addScaledVector(std::vector<double>& target, const std::vector<double>& source, double scale);
+-
+   ompl::base::StateSamplerPtr sampler_;
+@@
+   unsigned int maxSamplingAttemptsPerIteration_{ 1U };
+   std::function<double(const ompl::base::State*)> safetyEvaluator_;
+   std::function<double(const ompl::base::State*)> clearanceEvaluator_;
+   double adaptiveRangeMinScale_{ 1.0 };
+   double dangerSamplingKeepProbability_{ 1.0 };
+-  bool heatmapApfEnabled_{ false };
+-  double heatmapApfClearanceThreshold_{ 0.0 };
+-  double heatmapApfGradientDelta_{ 0.0 };
+-  double heatmapApfRepulsionWeight_{ 0.8 };
+-  double heatmapApfTangentWeight_{ 1.2 };
+   ompl::base::OptimizationObjectivePtr opt_;
+ };
+diff --git a/src/dual_arm_rrt_planner/src/local_trrt.cpp b/src/dual_arm_rrt_planner/src/local_trrt.cpp
+--- a/src/dual_arm_rrt_planner/src/local_trrt.cpp
++++ b/src/dual_arm_rrt_planner/src/local_trrt.cpp
+@@
+ double clampScalar(const double value, const double lower, const double upper)
+ {
+   return std::max(lower, std::min(value, upper));
+ }
+-
+-double safeDenominator(const double value)
+-{
+-  return std::abs(value) > 1e-12 ? value : (value >= 0.0 ? 1e-12 : -1e-12);
+-}
+ }  // namespace
+@@
+-bool LocalTRRT::applyHeatmapApfGuidance(const ompl::base::State* current_state, const ompl::base::State* sampled_state,
+-                                        ompl::base::State* guided_state) const
+-{
+-  if (!heatmapApfEnabled_ || !clearanceEvaluator_ || current_state == nullptr || sampled_state == nullptr ||
+-      guided_state == nullptr)
+-  {
+-    return false;
+-  }
+-
+-  if (!(heatmapApfClearanceThreshold_ > 0.0))
+-  {
+-    return false;
+-  }
+-
+-  const double current_clearance = clearanceEvaluator_(current_state);
+-  if (!std::isfinite(current_clearance) || current_clearance >= heatmapApfClearanceThreshold_)
+-  {
+-    return false;
+-  }
+-
+-  std::vector<double> current_values = extractStateValues(current_state);
+-  std::vector<double> sampled_values = extractStateValues(sampled_state);
+-  if (current_values.empty() || current_values.size() != sampled_values.size())
+-  {
+-    return false;
+-  }
+-
+-  std::vector<double> attractive_direction(current_values.size(), 0.0);
+-  if (goalTreeSeedState_ != nullptr)
+-  {
+-    const std::vector<double> goal_values = extractStateValues(goalTreeSeedState_);
+-    if (goal_values.size() == current_values.size())
+-    {
+-      for (std::size_t index = 0; index < current_values.size(); ++index)
+-      {
+-        attractive_direction[index] = goal_values[index] - current_values[index];
+-      }
+-    }
+-  }
+-
+-  if (!normalizeVector(attractive_direction))
+-  {
+-    for (std::size_t index = 0; index < current_values.size(); ++index)
+-    {
+-      attractive_direction[index] = sampled_values[index] - current_values[index];
+-    }
+-    if (!normalizeVector(attractive_direction))
+-    {
+-      return false;
+-    }
+-  }
+-
+-  std::vector<double> repulsive_direction = computeClearanceGradient(current_state);
+-  if (!normalizeVector(repulsive_direction))
+-  {
+-    return false;
+-  }
+-
+-  std::vector<double> tangent_direction = attractive_direction;
+-  addScaledVector(tangent_direction, repulsive_direction, -dotProduct(attractive_direction, repulsive_direction));
+-  const bool tangent_available = normalizeVector(tangent_direction);
+-
+-  const double activation =
+-      clampScalar((heatmapApfClearanceThreshold_ - current_clearance) / heatmapApfClearanceThreshold_, 0.0, 1.0);
+-
+-  std::vector<double> guided_direction = attractive_direction;
+-  addScaledVector(guided_direction, repulsive_direction, activation * heatmapApfRepulsionWeight_);
+-  if (tangent_available)
+-  {
+-    addScaledVector(guided_direction, tangent_direction, activation * heatmapApfTangentWeight_);
+-  }
+-
+-  if (!normalizeVector(guided_direction))
+-  {
+-    return false;
+-  }
+-
+-  const double requested_step = si_->distance(current_state, sampled_state);
+-  if (!(requested_step > std::numeric_limits<double>::epsilon()))
+-  {
+-    return false;
+-  }
+-
+-  std::vector<double> guided_values = current_values;
+-  addScaledVector(guided_values, guided_direction, requested_step);
+-
+-  const auto* state_space = dynamic_cast<const ompl::base::RealVectorStateSpace*>(si_->getStateSpace().get());
+-  if (state_space == nullptr)
+-  {
+-    return false;
+-  }
+-
+-  const ompl::base::RealVectorBounds& bounds = state_space->getBounds();
+-  for (std::size_t index = 0; index < guided_values.size(); ++index)
+-  {
+-    guided_values[index] = clampScalar(guided_values[index], bounds.low[index], bounds.high[index]);
+-  }
+-
+-  assignStateValues(guided_values, guided_state);
+-  return si_->distance(current_state, guided_state) > std::numeric_limits<double>::epsilon();
+-}
+-
+-std::vector<double> LocalTRRT::extractStateValues(const ompl::base::State* state) const
+-{
+-  const auto* state_space = dynamic_cast<const ompl::base::RealVectorStateSpace*>(si_->getStateSpace().get());
+-  if (state_space == nullptr || state == nullptr)
+-  {
+-    return {};
+-  }
+-
+-  const std::size_t dimension = state_space->getDimension();
+-  const auto* real_vector_state = state->as<ompl::base::RealVectorStateSpace::StateType>();
+-  std::vector<double> values(dimension, 0.0);
+-  for (std::size_t index = 0; index < dimension; ++index)
+-  {
+-    values[index] = real_vector_state->values[index];
+-  }
+-  return values;
+-}
+-
+-void LocalTRRT::assignStateValues(const std::vector<double>& values, ompl::base::State* state) const
+-{
+-  const auto* state_space = dynamic_cast<const ompl::base::RealVectorStateSpace*>(si_->getStateSpace().get());
+-  if (state_space == nullptr || state == nullptr)
+-  {
+-    return;
+-  }
+-
+-  const std::size_t dimension = state_space->getDimension();
+-  auto* real_vector_state = state->as<ompl::base::RealVectorStateSpace::StateType>();
+-  for (std::size_t index = 0; index < std::min(values.size(), dimension); ++index)
+-  {
+-    real_vector_state->values[index] = values[index];
+-  }
+-}
+-
+-std::vector<double> LocalTRRT::computeClearanceGradient(const ompl::base::State* state) const
+-{
+-  const auto* state_space = dynamic_cast<const ompl::base::RealVectorStateSpace*>(si_->getStateSpace().get());
+-  if (state_space == nullptr || state == nullptr || !clearanceEvaluator_)
+-  {
+-    return {};
+-  }
+-
+-  const std::size_t dimension = state_space->getDimension();
+-  const ompl::base::RealVectorBounds& bounds = state_space->getBounds();
+-  const std::vector<double> reference_values = extractStateValues(state);
+-  const double delta = heatmapApfGradientDelta_ > 0.0 ? heatmapApfGradientDelta_ : 1e-2;
+-  std::vector<double> gradient(dimension, 0.0);
+-  ompl::base::State* scratch_state = si_->allocState();
+-
+-  for (std::size_t index = 0; index < dimension; ++index)
+-  {
+-    std::vector<double> plus_values = reference_values;
+-    std::vector<double> minus_values = reference_values;
+-    plus_values[index] = clampScalar(plus_values[index] + delta, bounds.low[index], bounds.high[index]);
+-    minus_values[index] = clampScalar(minus_values[index] - delta, bounds.low[index], bounds.high[index]);
+-
+-    assignStateValues(plus_values, scratch_state);
+-    const double plus_clearance = clearanceEvaluator_(scratch_state);
+-    assignStateValues(minus_values, scratch_state);
+-    const double minus_clearance = clearanceEvaluator_(scratch_state);
+-
+-    if (std::isfinite(plus_clearance) && std::isfinite(minus_clearance))
+-    {
+-      gradient[index] = (plus_clearance - minus_clearance) /
+-                        safeDenominator(plus_values[index] - minus_values[index]);
+-    }
+-  }
+-
+-  si_->freeState(scratch_state);
+-  return gradient;
+-}
+-
+-double LocalTRRT::computeVectorNorm(const std::vector<double>& values)
+-{
+-  double squared_norm = 0.0;
+-  for (double value : values)
+-  {
+-    squared_norm += value * value;
+-  }
+-  return std::sqrt(squared_norm);
+-}
+-
+-bool LocalTRRT::normalizeVector(std::vector<double>& values)
+-{
+-  const double norm = computeVectorNorm(values);
+-  if (!(norm > std::numeric_limits<double>::epsilon()))
+-  {
+-    return false;
+-  }
+-
+-  for (double& value : values)
+-  {
+-    value /= norm;
+-  }
+-  return true;
+-}
+-
+-double LocalTRRT::dotProduct(const std::vector<double>& left, const std::vector<double>& right)
+-{
+-  const std::size_t dimension = std::min(left.size(), right.size());
+-  double result = 0.0;
+-  for (std::size_t index = 0; index < dimension; ++index)
+-  {
+-    result += left[index] * right[index];
+-  }
+-  return result;
+-}
+-
+-void LocalTRRT::addScaledVector(std::vector<double>& target, const std::vector<double>& source, double scale)
+-{
+-  const std::size_t dimension = std::min(target.size(), source.size());
+-  for (std::size_t index = 0; index < dimension; ++index)
+-  {
+-    target[index] += scale * source[index];
+-  }
+-}
+-
+ void LocalTRRT::updateBestAndWorstCost(const ompl::base::Cost& cost)
+ {
+@@
+-bool LocalTRRT::sampleExpansionTarget(Motion* random_motion, ompl::base::State* random_state,
+-                                      ompl::base::State* interpolated_state, ompl::base::State* guided_state,
+-                                      ompl::base::Goal* goal,
++bool LocalTRRT::sampleExpansionTarget(Motion* random_motion, ompl::base::State* random_state,
++                                      ompl::base::State* interpolated_state, ompl::base::Goal* goal,
+                                       ompl::base::GoalSampleableRegion* goal_sampleable_region, const TreeData& tree,
+                                       Motion*& nearest_motion, ompl::base::State*& new_state, double& motion_distance,
+                                       bool allow_goal_bias)
+@@
+-    ompl::base::State* candidate_state = random_state;
+-    if (applyHeatmapApfGuidance(nearest_motion->state, random_state, guided_state))
+-    {
+-      candidate_state = guided_state;
+-    }
+-
+     const double effective_max_distance = computeAdaptiveRange(nearest_motion->state);
+     const double effective_min_parent_child_distance = getEffectiveMinParentChildDistance(effective_max_distance);
+-    motion_distance = si_->distance(nearest_motion->state, candidate_state);
++    motion_distance = si_->distance(nearest_motion->state, random_state);
+     if (motion_distance > effective_max_distance)
+     {
+-      si_->getStateSpace()->interpolate(nearest_motion->state, candidate_state,
++      si_->getStateSpace()->interpolate(nearest_motion->state, random_state,
+                                         effective_max_distance / motion_distance,
+                                         interpolated_state);
+       motion_distance = si_->distance(nearest_motion->state, interpolated_state);
+@@
+   auto* random_motion = new Motion(si_);
+   Motion* nearest_motion = nullptr;
+   ompl::base::State* random_state = random_motion->state;
+   ompl::base::State* interpolated_state = si_->allocState();
+-  ompl::base::State* guided_state = si_->allocState();
+   ompl::base::State* new_state = nullptr;
+@@
+-    if (!sampleExpansionTarget(random_motion, random_state, interpolated_state, guided_state, goal, goal_region,
++    if (!sampleExpansionTarget(random_motion, random_state, interpolated_state, goal, goal_region,
+                                nearestNeighbors_,
+                                nearest_motion, new_state, random_motion_distance, true))
+@@
+   }
+ 
+   si_->freeState(interpolated_state);
+-  si_->freeState(guided_state);
+   if (random_motion->state != nullptr)
+   {
+     si_->freeState(random_motion->state);
+@@
+   Motion* nearest_motion = nullptr;
+   ompl::base::State* random_state = random_motion->state;
+   ompl::base::State* interpolated_state = si_->allocState();
+-  ompl::base::State* guided_state = si_->allocState();
+   ompl::base::State* new_state = nullptr;
+   double random_motion_distance = 0.0;
+@@
+-    if (!sampleExpansionTarget(random_motion, random_state, interpolated_state, guided_state, goal, goal_region,
++    if (!sampleExpansionTarget(random_motion, random_state, interpolated_state, goal, goal_region,
+                                active_tree,
+                                nearest_motion, new_state, random_motion_distance, allow_goal_bias))
+@@
+   }
+ 
+   si_->freeState(interpolated_state);
+-  si_->freeState(guided_state);
+   if (random_motion->state != nullptr)
+   {
+     si_->freeState(random_motion->state);
+diff --git a/src/dual_arm_rrt_planner/src/dual_arm_trrt_planner_manager.cpp b/src/dual_arm_rrt_planner/src/dual_arm_trrt_planner_manager.cpp
+--- a/src/dual_arm_rrt_planner/src/dual_arm_trrt_planner_manager.cpp
++++ b/src/dual_arm_rrt_planner/src/dual_arm_trrt_planner_manager.cpp
+@@
+       planner->setClearanceEvaluator(
+           [this](const ompl::base::State* state) { return this->evaluateHeatmapClearance(state); });
+       planner->setSafetyEvaluator(
+           [this](const ompl::base::State* state) { return this->evaluateHeatmapSafety(state); });
+       planner->setAdaptiveRangeMinScale(config_.heatmap.step_min_scale);
+       planner->setDangerSamplingKeepProbability(config_.heatmap.sampling_min_keep_probability);
+-      planner->setHeatmapApfEnabled(true);
+-      planner->setHeatmapApfClearanceThreshold(std::max(config_.heatmap.objective_clearance_threshold,
+-                                                        0.5 * config_.heatmap.resolution));
+-      planner->setHeatmapApfGradientDelta(std::max(0.5 * config_.heatmap.resolution, 1e-3));
+-      planner->setHeatmapApfRepulsionWeight(0.8);
+-      planner->setHeatmapApfTangentWeight(1.2);
+     }
+     planner->setup();

@@ -1,9 +1,0 @@
-<library path="libimproved_rrt_planner">
-  <class name="improved_rrt_planner/ImprovedRRTPlannerManager"
-         type="improved_rrt_planner::ImprovedRRTPlannerManager"
-         base_class_type="planning_interface::PlannerManager">
-    <description>
-      Improved RRT planner manager for MoveIt
-    </description>
-  </class>
-</library>

@@ -8,10 +8,14 @@ project(table_obstacles)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  clearance_heatmap_msgs
   geometry_msgs
+  moveit_msgs
   moveit_commander
   rospy
+  shape_msgs
   std_msgs
+  visualization_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -104,10 +108,15 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES table_obstacles
-#  CATKIN_DEPENDS geometry_msgs moveit_commander rospy std_msgs
-#  DEPENDS system_lib
+  CATKIN_DEPENDS
+    clearance_heatmap_msgs
+    geometry_msgs
+    moveit_commander
+    moveit_msgs
+    rospy
+    shape_msgs
+    std_msgs
+    visualization_msgs
 )
 
 ###########
@@ -161,9 +170,15 @@ include_directories(
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
+  scripts/add_complex_obstacle.py
+  scripts/add_complex_obstacle_gazebo.py
+  scripts/add_complex_obstacle_no_moveit.py
+  scripts/add_simple_obstacle.py
+  scripts/add_simple_obstacle_gazebo.py
   scripts/add_table_obstacles.py
   scripts/add_table_obstacles_gazebo.py
   scripts/publish_map_to_moveit.py
+  scripts/publish_planning_scene_environment.py
   scripts/publish_bt_octomap.py
   scripts/swap_balls_test.py
   scripts/wait_and_start_octomap_server.py

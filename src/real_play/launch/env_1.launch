@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- 1. 启动环境节点 (env_1.py) -->
+    <node name="env_1_node" pkg="real_play" type="env_1.py" output="screen">
+        <param name="environment_topic" value="/map_process/environment_info" />
+    </node>
+
+    <!-- 2. 启动可视化相关的计算节点 (如果需要显示 APF，这里预留，先只看环境) -->
+    <!-- <node name="simple_apf_visualizer" pkg="dual_arm_rrt_planner" type="simple_apf_visualizer.py" output="screen" /> -->
+
+    <!-- 3. 启动 RViz -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find dual_arm_rrt_planner)/config/apf_debug.rviz" required="true" />
+</launch>

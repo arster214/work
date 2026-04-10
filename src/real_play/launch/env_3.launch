@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- 1. 启动环境节点 (env_3.py) -->
+    <node name="env_3_node" pkg="real_play" type="env_3.py" output="screen">
+        <param name="environment_topic" value="/map_process/environment_info" />
+    </node>
+
+    <!-- 2. 启动 RViz 并加载配置 -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find dual_arm_rrt_planner)/config/apf_debug.rviz" required="true" />
+</launch>

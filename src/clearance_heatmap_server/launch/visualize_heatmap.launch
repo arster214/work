@@ -1,0 +1,65 @@
+<launch>
+  <arg name="input_npz" default="AUTO" />
+  <arg name="source_type" default="fiesta_bbox" />
+  <arg name="environment_topic" default="/map_process/environment_info" />
+  <arg name="service_name" default="/clearance_heatmap_server/generate_clearance_heatmap" />
+  <arg name="service_timeout" default="3.0" />
+  <arg name="segmentation_json" default="AUTO" />
+  <arg name="heatmap_key" default="pred" />
+  <arg name="output_ply" default="AUTO" />
+  <arg name="metadata_json" default="AUTO" />
+  <arg name="selection_mode" default="below" />
+  <arg name="value_threshold" default="nan" />
+  <arg name="percentile" default="30.0" />
+  <arg name="max_points" default="0" />
+  <arg name="fiesta_resolution" default="0.05" />
+  <arg name="fiesta_xy_margin" default="0.03" />
+  <arg name="fiesta_z_min_offset" default="-0.02" />
+  <arg name="fiesta_z_max_height" default="0.60" />
+  <arg name="robot_radius" default="0.05" />
+  <arg name="safety_margin" default="0.02" />
+  <arg name="clearance_clip" default="0.40" />
+  <arg name="frame_id" default="map" />
+  <arg name="topic" default="/clearance_heatmap/point_cloud" />
+  <arg name="once" default="false" />
+  <arg name="rate" default="1.0" />
+  <arg name="start_rviz" default="true" />
+
+  <node pkg="clearance_heatmap_server"
+        type="clearance_heatmap_visualizer.py"
+        name="clearance_heatmap_visualizer"
+        output="screen"
+        args="
+          --input-npz $(arg input_npz)
+          --source-type $(arg source_type)
+          --environment-topic $(arg environment_topic)
+          --service-name $(arg service_name)
+          --service-timeout $(arg service_timeout)
+          --segmentation-json $(arg segmentation_json)
+          --heatmap-key $(arg heatmap_key)
+          --output-ply $(arg output_ply)
+          --metadata-json $(arg metadata_json)
+          --selection-mode $(arg selection_mode)
+          --value-threshold $(arg value_threshold)
+          --percentile $(arg percentile)
+          --max-points $(arg max_points)
+          --fiesta-resolution $(arg fiesta_resolution)
+          --fiesta-xy-margin $(arg fiesta_xy_margin)
+          --fiesta-z-min-offset $(arg fiesta_z_min_offset)
+          --fiesta-z-max-height $(arg fiesta_z_max_height)
+          --robot-radius $(arg robot_radius)
+          --safety-margin $(arg safety_margin)
+          --clearance-clip $(arg clearance_clip)
+          --frame-id $(arg frame_id)
+          --topic $(arg topic)
+          --publish true
+          --once $(arg once)
+          --rate $(arg rate)
+        " />
+
+  <node if="$(arg start_rviz)"
+        pkg="rviz"
+        type="rviz"
+        name="rviz_heatmap_pointcloud"
+        args="-d $(find clearance_heatmap_server)/rviz/heatmap_pointcloud.rviz" />
+</launch>

@@ -1,0 +1,18 @@
+<launch>
+  <arg name="environment_topic" default="/map_process/environment_info"/>
+  <arg name="planning_scene_service" default="/get_planning_scene"/>
+  <arg name="publish_rate" default="1.0"/>
+  <arg name="fixed_table_z" default="nan"/>
+
+  <node name="publish_planning_scene_environment"
+        pkg="table_obstacles"
+        type="publish_planning_scene_environment.py"
+        output="screen">
+    <param name="environment_topic" value="$(arg environment_topic)"/>
+    <param name="planning_scene_service" value="$(arg planning_scene_service)"/>
+    <param name="publish_rate" value="$(arg publish_rate)"/>
+    <param name="fixed_table_z" value="$(arg fixed_table_z)"/>
+    <rosparam param="table_object_names">["table"]</rosparam>
+    <rosparam param="exclude_object_names">["table", "ground", "ground_plane", "floor"]</rosparam>
+  </node>
+</launch>

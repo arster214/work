@@ -1,0 +1,58 @@
+# 双臂测试示例配置
+# 使用 dual_arms planning group，可同时对 OMPL 基线和 dual_arm_rrt 做基准测试
+
+group_name: "dual_arms"
+
+# 双臂配置支持两种写法：
+# 1. 直接给 14 维列表
+# 2. 按 l_arm / r_arm 分别填写，脚本会自动拼成 14 维
+start_joints:
+  l_arm: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  r_arm: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+goal_pose:
+  id: "dual_pose_1"
+  description: "双臂目标姿态 1"
+  joints:
+    l_arm: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    r_arm: [1.862, 0.664, 0.345, 1.449, -1.457, 1.128, 0.849]
+
+planners:
+  - name: "RRTConnect"
+    display_name: "OMPL RRTConnect"
+    description: "MoveIt/OMPL 自带的 RRTConnect，适合作为首解速度基线"
+    supported_groups: ["dual_arms"]
+
+  - name: "TRRT"
+    display_name: "OMPL TRRT"
+    description: "MoveIt/OMPL 自带的 T-RRT，适合作为代价感知基线"
+    supported_groups: ["dual_arms"]
+
+  - name: "DualArmTRRT"
+    display_name: "DualArmTRRT (dual_arm_rrt)"
+    description: "dual_arm_rrt 插件中的本文算法"
+    supported_groups: ["dual_arms"]
+    params:
+      range: 0.1
+      goal_bias: 0.05
+      init_temperature: 100.0
+      temp_change_factor: 0.1
+
+test_params:
+  num_runs: 50
+  timeout: 30.0
+  reset_delay: 1.0
+  output_dir: "~/benchmark_results"
+  planning_watchdog_padding: 15.0
+  planning_attempts: 1  # 采集 tree_size 时建议保持 1；>1 会触发 OMPL ParallelPlan，PlannerData 常为空
+  worker_poll_interval: 0.2
+  kill_move_group_on_timeout: true
+  move_group_node_name: "/move_group"
+  move_group_action_name: "move_group"
+  move_group_recovery_wait: 15.0
+  move_group_shutdown_wait: 5.0
+  move_group_ready_wait: 15.0
+  reconnect_retry_delay: 2.0
+  max_recovery_attempts: 1
+  restart_move_group_command: ""
+  stop_on_unrecoverable_move_group: true

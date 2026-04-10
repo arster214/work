@@ -13,7 +13,9 @@
   <arg name="start_state_max_bounds_error" default="0.1" />
   <arg name="jiggle_fraction" default="0.05" />
 
-  <!-- 加载 DualArmRRT 规划器配置 -->
+  <param name="planning_plugin" value="dual_arm_rrt_planner/DualArmTRRTPlannerManager" />
+
+  <!-- 加载 DualArmTRRT 规划器配置 -->
   <rosparam command="load" file="$(find dual_75b_arm_rmg24_moveit_config)/config/dual_rrt_planning.yaml"/>
   
   <!-- 设置请求适配器 -->

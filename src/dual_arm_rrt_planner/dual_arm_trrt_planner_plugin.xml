@@ -1,0 +1,9 @@
+<library path="libdual_arm_trrt_plugin">
+  <class name="dual_arm_rrt_planner/DualArmTRRTPlannerManager"
+         type="dual_arm_rrt_planner::DualArmTRRTPlannerManager"
+         base_class_type="planning_interface::PlannerManager">
+    <description>
+      Native OMPL TRRT MoveIt planner plugin for unified dual-arm joint-space planning.
+    </description>
+  </class>
+</library>

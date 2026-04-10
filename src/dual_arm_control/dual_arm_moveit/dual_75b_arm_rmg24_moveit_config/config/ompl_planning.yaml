@@ -33,11 +33,11 @@ planner_configs:
     min_valid_path_fraction: 0.5  # Accept partially valid moves above fraction. default: 0.5
   RRT:
     type: geometric::RRT
-    range: 0.0  # Max motion added to tree. ==> maxDistance_ default: 0.0, if 0.0, set on setup()
+    range: 0.5  # Benchmark step size for OMPL RRT baseline
     goal_bias: 0.05  # When close to goal select goal, with this probability? default: 0.05
   RRTConnect:
     type: geometric::RRTConnect
-    range: 0.0  # Max motion added to tree. ==> maxDistance_ default: 0.0, if 0.0, set on setup()
+    range: 0.15  # Benchmark step size for OMPL RRTConnect baseline
   RRTstar:
     type: geometric::RRTstar
     range: 0.0  # Max motion added to tree. ==> maxDistance_ default: 0.0, if 0.0, set on setup()
@@ -45,7 +45,8 @@ planner_configs:
     delay_collision_checking: 1  # Stop collision checking as soon as C-free parent found. default 1
   TRRT:
     type: geometric::TRRT
-    range: 0.0  # Max motion added to tree. ==> maxDistance_ default: 0.0, if 0.0, set on setup()
+    range: 0.5  # Benchmark step size for OMPL TRRT baseline
+    optimization_objective: PathLengthOptimizationObjective  # Keep cost-aware planners on the same explicit objective
     goal_bias: 0.05  # When close to goal select goal, with this probability? default: 0.05
     max_states_failed: 10  # when to start increasing temp. default: 10
     temp_change_factor: 2.0  # how much to increase or decrease temp. default: 2.0
@@ -92,11 +93,12 @@ planner_configs:
     min_valid_path_fraction: 0.2  # Accept partially valid moves above fraction. default: 0.2
   BiTRRT:
     type: geometric::BiTRRT
-    range: 0.0  # Max motion added to tree. ==> maxDistance_ default: 0.0, if 0.0, set on setup()
-    temp_change_factor: 0.1  # how much to increase or decrease temp. default: 0.1
-    init_temperature: 100  # initial temperature. default: 100
-    frontier_threshold: 0.0  # dist new state to nearest neighbor to disqualify as frontier. default: 0.0 set in setup()
-    frontier_node_ratio: 0.1  # 1/10, or 1 nonfrontier for every 10 frontier. default: 0.1
+    range: 0.50  # Match TRRT's exploration scale so BiTRRT can create frontier nodes reliably
+    optimization_objective: PathLengthOptimizationObjective  # Avoid relying on MoveIt's implicit default objective
+    temp_change_factor: 0.10  # Follow the OMPL default heating schedule for less brittle transition testing
+    init_temperature: 100  # Higher initial temperature improves early exploration for cost-aware planning
+    frontier_threshold: 0.01  # Keep the frontier test explicit to avoid OMPL's auto-threshold silently dominating growth
+    frontier_node_ratio: 1.0  # Allow non-frontier refinement instead of rejecting almost every short extension
     cost_threshold: 1e300  # the cost threshold. Any motion cost that is not better will not be expanded. default: inf
   LBTRRT:
     type: geometric::LBTRRT
@@ -289,4 +291,37 @@ r_gripper:
     - ABITstar
     - BITstar
   projection_evaluator: joints(r_Joint_finger1,r_Joint_finger2)
+  longest_valid_segment_fraction: 0.005
+
+dual_arms:
+  default_planner_config: TRRT
+  planner_configs:
+    - AnytimePathShortening
+    - SBL
+    - EST
+    - LBKPIECE
+    - BKPIECE
+    - KPIECE
+    - RRT
+    - RRTConnect
+    - RRTstar
+    - TRRT
+    - PRM
+    - PRMstar
+    - FMT
+    - BFMT
+    - PDST
+    - STRIDE
+    - BiTRRT
+    - LBTRRT
+    - BiEST
+    - ProjEST
+    - LazyPRM
+    - LazyPRMstar
+    - SPARS
+    - SPARStwo
+    - AITstar
+    - ABITstar
+    - BITstar
+  projection_evaluator: joints(l_joint1,r_joint1)
   longest_valid_segment_fraction: 0.005

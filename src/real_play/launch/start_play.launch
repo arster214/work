@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- 选择启动哪一个环境：env_1 或 env_2 -->
+    <arg name="env_name" default="env_1" />
+
+    <!-- 1. 启动选定的环境节点 -->
+    <node name="current_env_node" pkg="real_play" type="$(arg env_name).py" output="screen">
+        <param name="environment_topic" value="/map_process/environment_info" />
+    </node>
+
+    <!-- 2. 启动 APF 力场计算与可视化节点 -->
+    <node name="simple_apf_visualizer" pkg="dual_arm_rrt_planner" type="simple_apf_visualizer.py" output="screen" />
+
+    <!-- 3. 启动清除率热力场服务 (计算斥力梯度必须) -->
+    <include file="$(find clearance_heatmap_server)/launch/heatmap_server.launch">
+        <arg name="start_rviz" value="false" />
+    </include>
+
+    <!-- 4. 启动 RViz 并加载专用配置 -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find dual_arm_rrt_planner)/config/apf_debug.rviz" />
+</launch>

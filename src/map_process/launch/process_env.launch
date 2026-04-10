@@ -4,8 +4,8 @@
     <arg name="obstacle_avoidance_mode" default="aabb_apf" />
 
     <!-- Parameters -->
-    <arg name="workdir" default="/home/fang/catkin_ws/map" />
-    <arg name="input_bt" default="$(arg workdir)/hard.bt" />
+    <arg name="workdir" default="/home/fang/catkin_wsfrj/map" />
+    <arg name="input_bt" default="" />
 
     <!-- Perception parameters -->
     <arg name="table_min_z" default="0.4" />
@@ -17,6 +17,32 @@
     
     <arg name="cleaned_bt" default="cleaned_map.bt" />
     <arg name="output_json" default="segmentation_result.json" />
+    <arg name="environment_info_topic" default="/map_process/environment_info" />
+
+    <!-- Heatmap visualization -->
+    <arg name="start_heatmap_service" default="true" />
+    <arg name="start_heatmap_visualizer" default="true" />
+    <arg name="heatmap_service_name" default="~generate_clearance_heatmap" />
+    <arg name="heatmap_source_type" default="fiesta_bbox" />
+    <arg name="heatmap_segmentation_json" default="AUTO" />
+    <arg name="heatmap_input_npz" default="AUTO" />
+    <arg name="heatmap_key" default="pred" />
+    <arg name="heatmap_output_ply" default="AUTO" />
+    <arg name="heatmap_metadata_json" default="AUTO" />
+    <arg name="heatmap_selection_mode" default="below" />
+    <arg name="heatmap_value_threshold" default="nan" />
+    <arg name="heatmap_percentile" default="50.0" />
+    <arg name="heatmap_max_points" default="0" />
+    <arg name="heatmap_fiesta_resolution" default="0.05" />
+    <arg name="heatmap_fiesta_xy_margin" default="0.03" />
+    <arg name="heatmap_fiesta_z_min_offset" default="-0.02" />
+    <arg name="heatmap_fiesta_z_max_height" default="0.60" />
+    <arg name="heatmap_robot_radius" default="0.05" />
+    <arg name="heatmap_safety_margin" default="0.02" />
+    <arg name="heatmap_clearance_clip" default="0.40" />
+    <arg name="heatmap_frame_id" default="map" />
+    <arg name="heatmap_topic" default="/clearance_heatmap/point_cloud" />
+    <arg name="heatmap_rate" default="1.0" />
 
     <param name="obstacle_avoidance_mode" value="$(arg obstacle_avoidance_mode)" />
     
@@ -33,5 +59,55 @@
         <param name="workspace_z_max_height" value="$(arg workspace_z_max_height)" />
         <param name="cleaned_bt" value="$(arg cleaned_bt)" />
         <param name="output_json" value="$(arg output_json)" />
+        <param name="environment_topic" value="$(arg environment_info_topic)" />
     </node>
+
+    <node if="$(arg start_heatmap_service)"
+          pkg="clearance_heatmap_server"
+          type="clearance_heatmap_server_node.py"
+          name="clearance_heatmap_server"
+          output="screen">
+        <param name="service_name" value="$(arg heatmap_service_name)" />
+        <param name="robot_radius" value="$(arg heatmap_robot_radius)" />
+        <param name="safety_margin" value="$(arg heatmap_safety_margin)" />
+        <param name="clearance_clip" value="$(arg heatmap_clearance_clip)" />
+        <param name="default_resolution" value="$(arg heatmap_fiesta_resolution)" />
+        <param name="default_xy_margin" value="$(arg heatmap_fiesta_xy_margin)" />
+        <param name="default_z_min_offset" value="$(arg heatmap_fiesta_z_min_offset)" />
+        <param name="default_z_max_height" value="$(arg heatmap_fiesta_z_max_height)" />
+    </node>
+
+    <node if="$(arg start_heatmap_visualizer)"
+          pkg="clearance_heatmap_server"
+          type="clearance_heatmap_visualizer.py"
+          name="clearance_heatmap_visualizer"
+          output="screen"
+          args="
+            --source-type $(arg heatmap_source_type)
+            --segmentation-json $(arg heatmap_segmentation_json)
+            --input-npz $(arg heatmap_input_npz)
+            --heatmap-key $(arg heatmap_key)
+            --output-ply $(arg heatmap_output_ply)
+            --metadata-json $(arg heatmap_metadata_json)
+            --selection-mode $(arg heatmap_selection_mode)
+            --value-threshold $(arg heatmap_value_threshold)
+            --percentile $(arg heatmap_percentile)
+            --max-points $(arg heatmap_max_points)
+            --fiesta-resolution $(arg heatmap_fiesta_resolution)
+            --fiesta-xy-margin $(arg heatmap_fiesta_xy_margin)
+            --fiesta-z-min-offset $(arg heatmap_fiesta_z_min_offset)
+            --fiesta-z-max-height $(arg heatmap_fiesta_z_max_height)
+            --robot-radius $(arg heatmap_robot_radius)
+            --safety-margin $(arg heatmap_safety_margin)
+            --clearance-clip $(arg heatmap_clearance_clip)
+            --frame-id $(arg heatmap_frame_id)
+            --topic $(arg heatmap_topic)
+            --publish true
+            --once false
+            --rate $(arg heatmap_rate)
+          " />
+
+    <!-- 自动启动 RViz 以便查看生成的包围盒和提取点云 -->
+    <arg name="start_rviz" default="true" />
+    <node if="$(arg start_rviz)" pkg="rviz" type="rviz" name="rviz_map_process" args="-d $(find map_process)/rviz/map_process.rviz" />
 </launch>

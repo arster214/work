@@ -1,7 +1,6 @@
 <launch>
   <!-- 启动 Gazebo + MoveIt -->
       <include file="$(find dual_75b_arm_gazebo)/launch/arm_75_bringup_moveit_rmg24.launch"/>
-  <node pkg="improved_rrt_planner" type="publish_wheel_states.py" name="agv_wheel_publisher" output="screen" />
   <!-- 参数：是否在 Gazebo 中显示障碍物 -->
   <arg name="use_gazebo" default="true"/>
   

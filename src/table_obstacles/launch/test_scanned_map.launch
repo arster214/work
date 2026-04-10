@@ -2,7 +2,6 @@
 <launch>
   <!-- Bring up Gazebo + MoveIt just like add_table.launch -->
   <include file="$(find dual_75b_arm_gazebo)/launch/arm_75_bringup_moveit_rmg24.launch"/>
-  <node pkg="improved_rrt_planner" type="publish_wheel_states.py" name="agv_wheel_publisher" output="screen" />
 
   <!-- Startup timing -->
   <arg name="wait_time" default="15"/>

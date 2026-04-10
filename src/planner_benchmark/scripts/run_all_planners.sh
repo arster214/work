@@ -5,8 +5,8 @@
 set -e
 
 # 配置参数
-NUM_RUNS=20
-TIMEOUT=10.0
+NUM_RUNS=50
+TIMEOUT=30.0
 OUTPUT_DIR="$HOME/benchmark_results"
 CONFIG_FILE=""
 
@@ -48,8 +48,66 @@ echo "输出目录: $OUTPUT_DIR"
 echo "=========================================="
 echo ""
 
-# 规划器列表
-PLANNERS=("BasicRRT" "BasicRRTStar" "ImprovedRRT")
+# 根据配置自动决定规划器列表
+RESOLVED_CONFIG_FILE="$CONFIG_FILE"
+if [ -z "$RESOLVED_CONFIG_FILE" ]; then
+    RESOLVED_CONFIG_FILE="$(rospack find planner_benchmark)/config/test_poses.yaml"
+fi
+
+DETECTED_GROUP=$(python3 - "$RESOLVED_CONFIG_FILE" <<'PY'
+import sys
+import yaml
+
+config_path = sys.argv[1]
+with open(config_path, 'r') as handle:
+    config = yaml.safe_load(handle) or {}
+
+def get_arm_map(joint_values):
+    if not isinstance(joint_values, dict):
+        return None
+    left = joint_values.get('l_arm', joint_values.get('left_arm'))
+    right = joint_values.get('r_arm', joint_values.get('right_arm'))
+    if left is None or right is None:
+        return None
+    return {'l_arm': list(left), 'r_arm': list(right)}
+
+def is_zero_joint_vector(values):
+    return isinstance(values, (list, tuple)) and len(values) > 0 and all(abs(float(v)) <= 1e-9 for v in values)
+
+start_raw = config.get('start_joints', config.get('home_joints'))
+goal_pose = config.get('goal_pose') or {}
+goal_raw = goal_pose.get('joints') if isinstance(goal_pose, dict) else None
+
+start_arm_map = get_arm_map(start_raw)
+goal_arm_map = get_arm_map(goal_raw)
+group_name = str(config.get('group_name', 'auto')).strip()
+
+if group_name.lower() == 'auto' and start_arm_map and goal_arm_map:
+    left_inactive = is_zero_joint_vector(start_arm_map['l_arm']) and is_zero_joint_vector(goal_arm_map['l_arm'])
+    right_inactive = is_zero_joint_vector(start_arm_map['r_arm']) and is_zero_joint_vector(goal_arm_map['r_arm'])
+    if left_inactive and not right_inactive:
+        print('r_arm')
+    elif right_inactive and not left_inactive:
+        print('l_arm')
+    elif not left_inactive and not right_inactive:
+        print('dual_arms')
+    else:
+        print('invalid')
+else:
+    print(group_name)
+PY
+)
+
+if [ "$DETECTED_GROUP" = "dual_arms" ]; then
+    PLANNERS=("RRTConnect" "TRRT" "DualArmTRRT")
+    echo "检测到双臂配置，将测试: ${PLANNERS[*]}"
+elif [ "$DETECTED_GROUP" = "l_arm" ] || [ "$DETECTED_GROUP" = "r_arm" ]; then
+    PLANNERS=("RRT" "RRTConnect" "TRRT")
+    echo "检测到单臂配置 ($DETECTED_GROUP)，将测试: ${PLANNERS[*]}"
+else
+    echo "无法从配置中识别单臂/双臂模式，请检查 $RESOLVED_CONFIG_FILE"
+    exit 1
+fi
 
 # 依次测试每个规划器
 for planner in "${PLANNERS[@]}"; do

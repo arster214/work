@@ -1,0 +1,26 @@
+<launch>
+  <!-- 启动 Gazebo + MoveIt -->
+  <include file="$(find dual_75b_arm_gazebo)/launch/arm_75_bringup_moveit_rmg24.launch"/>
+  
+  <!-- 参数：是否在 Gazebo 中显示障碍物 -->
+  <arg name="use_gazebo" default="true"/>
+  
+  <!-- 等待 Gazebo 和 MoveIt 完全启动 -->
+  <arg name="wait_time" default="15"/>
+  
+  <!-- 启动简单障碍物节点（仅 MoveIt），去除小球和护栏 -->
+  <node pkg="table_obstacles"
+        type="add_simple_obstacle.py"
+        name="add_simple_obstacle"
+        output="screen"
+        launch-prefix="bash -c 'sleep $(arg wait_time); exec $0 $@' "
+        unless="$(arg use_gazebo)"/>
+  
+  <!-- 启动简单障碍物节点（Gazebo + MoveIt），去除小球和护栏 -->
+  <node pkg="table_obstacles"
+        type="add_simple_obstacle_gazebo.py"
+        name="add_simple_obstacle_gazebo"
+        output="screen"
+        launch-prefix="bash -c 'sleep $(arg wait_time); exec $0 $@' "
+        if="$(arg use_gazebo)"/>
+</launch>

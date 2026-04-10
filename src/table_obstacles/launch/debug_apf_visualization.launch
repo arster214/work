@@ -1,0 +1,108 @@
+<launch>
+  <arg name="use_gazebo" default="true"/>
+  <arg name="wait_time" default="15"/>
+
+  <arg name="publish_environment_info" default="true"/>
+  <arg name="environment_topic" default="/map_process/environment_info"/>
+
+  <arg name="start_heatmap_server" default="true"/>
+  <arg name="start_heatmap_visualizer" default="true"/>
+  <arg name="start_apf_visualizer" default="true"/>
+  <arg name="start_heatmap_rviz" default="true"/>
+
+  <arg name="heatmap_service_name" default="/clearance_heatmap_server/generate_clearance_heatmap"/>
+  <arg name="heatmap_topic" default="/clearance_heatmap/point_cloud"/>
+  <arg name="heatmap_resolution" default="0.05"/>
+  <arg name="heatmap_robot_radius" default="0.05"/>
+  <arg name="heatmap_safety_margin" default="0.02"/>
+  <arg name="heatmap_clearance_clip" default="0.40"/>
+  <arg name="heatmap_frame_id" default="base_link_underpan"/>
+  <arg name="heatmap_publish_rate" default="1.0"/>
+  <arg name="heatmap_wait_timeout" default="6.0"/>
+
+  <arg name="apf_marker_topic" default="/dual_arm_trrt/apf_force_markers"/>
+  <arg name="apf_feedback_topic" default="/rviz/moveit/move_marker/feedback"/>
+  <arg name="apf_fk_service_name" default="/compute_fk"/>
+  <arg name="apf_active_arm" default="right"/>
+  <arg name="apf_publish_rate" default="20.0"/>
+  <arg name="apf_goal_timeout" default="5.0"/>
+  <arg name="apf_force_scale" default="0.50"/>
+  <arg name="apf_attractive_gain" default="1.50"/>
+  <arg name="apf_repulsive_gain" default="0.020"/>
+  <arg name="apf_heatmap_resolution" default="$(arg heatmap_resolution)"/>
+  <arg name="apf_workspace_padding" default="0.10"/>
+  <arg name="apf_repulsive_clearance_threshold" default="0.30"/>
+  <arg name="apf_max_force_magnitude" default="1.0"/>
+  <arg name="apf_min_visual_force_magnitude" default="0.03"/>
+  <arg name="apf_debug_always_show_repulsive" default="true"/>
+  <arg name="apf_debug_min_repulsive_activation" default="0.35"/>
+
+  <!-- APF Probe Goal Configuration -->
+  <arg name="probe_goal_x" default="0.0"/>
+  <arg name="probe_goal_y" default="-0.85"/>
+  <arg name="probe_goal_z" default="1.24"/>
+
+  <!-- 只加载必要的坐标变换和可视化，不加载机器人模型和 MoveIt -->
+  <node name="static_tf_base" pkg="tf2_ros" type="static_transform_publisher" args="0 0 0 0 0 0 map base_link_underpan" />
+
+  <!-- 使用不依赖于 MoveIt 的简单障碍物发布器 -->
+  <node if="$(arg publish_environment_info)"
+        pkg="table_obstacles"
+        type="add_complex_obstacle_no_moveit.py"
+        name="add_complex_obstacle"
+        output="screen">
+    <param name="environment_topic" value="$(arg environment_topic)" />
+  </node>
+
+  <!-- 自动启动 RViz，使用我们专门创建的 apf_debug.rviz 配置文件 -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find dual_arm_rrt_planner)/config/apf_debug.rviz" if="$(arg start_heatmap_rviz)"/>
+
+  <include if="$(arg start_heatmap_server)"
+           file="$(find clearance_heatmap_server)/launch/serve_heatmap.launch">
+    <arg name="service_name" value="$(arg heatmap_service_name)"/>
+    <arg name="robot_radius" value="$(arg heatmap_robot_radius)"/>
+    <arg name="safety_margin" value="$(arg heatmap_safety_margin)"/>
+    <arg name="clearance_clip" value="$(arg heatmap_clearance_clip)"/>
+    <arg name="default_resolution" value="$(arg heatmap_resolution)"/>
+  </include>
+
+  <include if="$(arg start_heatmap_visualizer)"
+           file="$(find clearance_heatmap_server)/launch/visualize_heatmap.launch">
+    <arg name="source_type" value="live_env"/>
+    <arg name="environment_topic" value="$(arg environment_topic)"/>
+    <arg name="service_name" value="$(arg heatmap_service_name)"/>
+    <arg name="service_timeout" value="$(arg heatmap_wait_timeout)"/>
+    <arg name="fiesta_resolution" value="$(arg heatmap_resolution)"/>
+    <arg name="robot_radius" value="$(arg heatmap_robot_radius)"/>
+    <arg name="safety_margin" value="$(arg heatmap_safety_margin)"/>
+    <arg name="clearance_clip" value="$(arg heatmap_clearance_clip)"/>
+    <arg name="frame_id" value="$(arg heatmap_frame_id)"/>
+    <arg name="topic" value="$(arg heatmap_topic)"/>
+    <arg name="rate" value="$(arg heatmap_publish_rate)"/>
+    <arg name="once" value="false"/>
+    <arg name="start_rviz" value="false"/>
+    <arg name="selection_mode" value="below"/>
+    <arg name="value_threshold" value="0.10"/>
+    <arg name="percentile" value="0.0"/>
+  </include>
+
+  <node if="$(arg start_apf_visualizer)"
+        pkg="dual_arm_rrt_planner"
+        type="simple_apf_visualizer.py"
+        name="simple_apf_visualizer_node"
+        output="screen">
+    <param name="base_frame" value="$(arg heatmap_frame_id)"/>
+    <param name="marker_topic" value="$(arg apf_marker_topic)"/>
+    <param name="environment_topic" value="$(arg environment_topic)"/>
+    <param name="service_name" value="$(arg heatmap_service_name)"/>
+    <param name="heatmap_resolution" value="$(arg apf_heatmap_resolution)"/>
+    <param name="goal_x" value="$(arg probe_goal_x)"/>
+    <param name="goal_y" value="$(arg probe_goal_y)"/>
+    <param name="goal_z" value="$(arg probe_goal_z)"/>
+    <param name="attractive_gain" value="$(arg apf_attractive_gain)"/>
+    <param name="repulsive_gain" value="$(arg apf_repulsive_gain)"/>
+    <param name="repulsive_dist" value="$(arg apf_repulsive_clearance_threshold)"/>
+    <param name="force_scale" value="$(arg apf_force_scale)"/>
+    <param name="max_force_magnitude" value="$(arg apf_max_force_magnitude)"/>
+  </node>
+</launch>

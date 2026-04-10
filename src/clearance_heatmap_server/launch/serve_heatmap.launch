@@ -1,0 +1,24 @@
+<launch>
+  <arg name="service_name" default="~generate_clearance_heatmap" />
+  <arg name="robot_radius" default="0.05" />
+  <arg name="safety_margin" default="0.02" />
+  <arg name="clearance_clip" default="0.40" />
+  <arg name="default_resolution" default="0.05" />
+  <arg name="default_xy_margin" default="0.03" />
+  <arg name="default_z_min_offset" default="-0.02" />
+  <arg name="default_z_max_height" default="0.60" />
+
+  <node pkg="clearance_heatmap_server"
+        type="clearance_heatmap_server_node.py"
+        name="clearance_heatmap_server"
+        output="screen">
+    <param name="service_name" value="$(arg service_name)" />
+    <param name="robot_radius" value="$(arg robot_radius)" />
+    <param name="safety_margin" value="$(arg safety_margin)" />
+    <param name="clearance_clip" value="$(arg clearance_clip)" />
+    <param name="default_resolution" value="$(arg default_resolution)" />
+    <param name="default_xy_margin" value="$(arg default_xy_margin)" />
+    <param name="default_z_min_offset" value="$(arg default_z_min_offset)" />
+    <param name="default_z_max_height" value="$(arg default_z_max_height)" />
+  </node>
+</launch>

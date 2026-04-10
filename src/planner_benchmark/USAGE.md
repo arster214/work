@@ -35,6 +35,9 @@ rosrun planner_benchmark paper_data_collection.py
 # 方法 2: 使用 launch 文件
 roslaunch planner_benchmark data_collection.launch
 
+# 方法 2.5: 使用双臂示例配置
+rosrun planner_benchmark paper_data_collection.py --config $(rospack find planner_benchmark)/config/test_poses_dual_arm.yaml
+
 # 方法 3: 自定义参数
 rosrun planner_benchmark paper_data_collection.py --runs 20 --timeout 10.0 --output ~/my_results
 ```
@@ -43,19 +46,20 @@ rosrun planner_benchmark paper_data_collection.py --runs 20 --timeout 10.0 --out
 
 ### 默认配置
 
-- **规划组**: r_arm (7-DOF)
-- **起始姿态**: [0, 0, 0, 0, 0, 0, 0]
-- **目标姿态**: 4 个
-  - 姿态 1: [1.375, 0.318, 0.339, 1.215, -1.107, 0.905, -0.002]
-  - 姿态 2: [1.862, 0.664, 0.345, 1.449, -1.457, 1.128, 0.849]
-  - 姿态 3: [-1.012, -1.372, 2.331, 0.195, -2.949, -0.966, -3.475]
-  - 姿态 4: [2.630, 0.850, -0.761, 1.432, -2.464, -0.535, 1.681]
+- **规划组**: `l_arm` / `r_arm` / `dual_arms`
+- **起始姿态**: 1 个
+- **目标姿态**: 1 个
 - **规划器**: 3 个
-  - ImprovedRRT (T-RRT+RRT*)
   - OMPL RRT
   - OMPL RRTstar
-- **重复次数**: 每个姿态 20 次
+  - DualArmTRRT (dual_arm_rrt)
+- **重复次数**: 20 次
 - **超时时间**: 10 秒
+
+说明：
+- `RRT` 和 `RRTstar` 支持单臂/双臂。
+- `DualArmTRRT` 仅支持 `dual_arms`，如果当前 group 不兼容，脚本会自动跳过并给出警告。
+- 双臂关节既可以写 14 维列表，也可以写成 `l_arm` / `r_arm` 两组，脚本会自动拼接。
 
 ### 修改配置
 
@@ -76,7 +80,7 @@ rosrun planner_benchmark paper_data_collection.py [选项]
 
 选项:
   --config PATH     配置文件路径
-  --runs N          每个姿态重复次数（默认: 20）
+  --runs N          当前单个测试用例重复次数（默认: 20）
   --timeout SEC     规划超时时间（默认: 10.0）
   --output DIR      输出目录（默认: ~/benchmark_results）
   -h, --help        显示帮助信息
@@ -95,12 +99,16 @@ rosrun planner_benchmark paper_data_collection.py [选项]
 | timestamp | 测试时间戳 | - |
 | planner_name | 规划器名称 | - |
 | planner_display_name | 规划器显示名称 | - |
+| group_name | 规划组名称 | - |
+| joint_dof | 关节维度 | - |
 | pose_id | 姿态 ID | - |
 | pose_description | 姿态描述 | - |
 | run_number | 运行次数 | - |
 | success | 是否成功 | True/False |
 | planning_time | 规划时间 | 秒 |
-| num_waypoints | 路径点数量 | 个 |
+| tree_vertices | 搜索树节点数 | 个 |
+| tree_edges | 搜索树边数 | 条 |
+| tree_size | 搜索树大小 | 个 |
 | path_length | 路径长度 | 弧度 |
 | smoothness | 平滑度 | - |
 | execution_time | 执行时间 | 秒 |
@@ -108,9 +116,9 @@ rosrun planner_benchmark paper_data_collection.py [选项]
 ### 示例数据
 
 ```csv
-timestamp,planner_name,planner_display_name,pose_id,pose_description,run_number,success,planning_time,num_waypoints,path_length,smoothness,execution_time
-2024-01-01 12:00:00,ImprovedRRT,T-RRT+RRT* (Ours),pose_1,目标姿态 1,1,True,0.523,45,8.234,0.123,3.456
-2024-01-01 12:00:15,ImprovedRRT,T-RRT+RRT* (Ours),pose_1,目标姿态 1,2,True,0.487,42,7.891,0.115,3.234
+timestamp,planner_name,planner_display_name,group_name,joint_dof,pose_id,pose_description,run_number,success,planning_time,tree_vertices,tree_edges,tree_size,path_length,smoothness,execution_time
+2024-01-01 12:00:00,RRT,OMPL RRT,r_arm,7,pose_1,目标姿态 1,1,True,0.523,,,,8.234,0.123,3.456
+2024-01-01 12:00:15,DualArmTRRT,DualArmTRRT (dual_arm_rrt),dual_arms,14,dual_pose_1,双臂目标姿态 1,2,True,0.487,128,127,128,7.891,0.115,3.234
 ...
 ```
 
@@ -132,7 +140,7 @@ df_success = df[df['success'] == True]
 stats = df_success.groupby('planner_display_name').agg({
     'planning_time': ['mean', 'std', 'min', 'max'],
     'path_length': ['mean', 'std'],
-    'num_waypoints': ['mean', 'std']
+    'tree_size': ['mean', 'std']
 })
 
 print(stats)
@@ -148,9 +156,8 @@ plt.show()
 ## 预计时间
 
 - 单次测试: ~10-15 秒
-- 单个姿态 20 次: ~3-5 分钟
-- 4 个姿态: ~12-20 分钟
-- 3 个规划器: **约 40-60 分钟**
+- 单个起终点用例 20 次: ~3-5 分钟
+- 3 个规划器: **约 10-15 分钟**
 
 ## 故障排除
 
@@ -165,12 +172,13 @@ chmod +x ~/dual_arm_robot_ws/src/planner_benchmark/scripts/paper_data_collection
 source ~/dual_arm_robot_ws/devel/setup.bash
 ```
 
-### 问题: 找不到规划组 'r_arm'
+### 问题: 找不到规划组 `r_arm` / `l_arm` / `dual_arms`
 
 **解决方案:**
 - 确保 MoveIt 已启动
 - 检查规划组名称是否正确
 - 修改配置文件中的 `group_name`
+- 如果测试 `dual_arms`，确认你启动的是包含 `baseline_rrt` 和 `dual_rrt` pipeline 的 MoveIt 配置
 
 ### 问题: 规划总是失败
 
@@ -235,36 +243,49 @@ df_combined.to_csv('benchmark_combined.csv', index=False)
 
 ```yaml
 planners:
-  - name: "ImprovedRRT"
-    display_name: "T-RRT+RRT* (Ours)"
+  - name: "DualArmTRRT"
+    display_name: "DualArmTRRT (dual_arm_rrt)"
     # ...
   
   # - name: "RRT"  # 注释掉不测试
   #   display_name: "RRT (OMPL)"
 ```
 
-### 添加更多目标姿态
+### 修改当前测试终点
 
-在配置文件中添加：
+在配置文件中修改：
 
 ```yaml
-goal_poses:
-  # ... 现有姿态
-  
-  - id: "pose_5"
-    description: "目标姿态 5"
-    joints: [1.0, 0.5, 0.3, 1.2, -1.1, 0.9, 0.0]
+goal_pose:
+  id: "pose_1"
+  description: "目标姿态 1"
+  joints: [1.0, 0.5, 0.3, 1.2, -1.1, 0.9, 0.0]
+```
+
+双臂也可以这样写：
+
+```yaml
+group_name: "dual_arms"
+
+start_joints:
+  l_arm: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  r_arm: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+goal_pose:
+  id: "dual_pose_1"
+  description: "双臂目标姿态 1"
+  joints:
+    l_arm: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    r_arm: [1.0, 0.5, 0.3, 1.2, -1.1, 0.9, 0.0]
 ```
 
 ### 测试不同的规划器参数
 
 ```yaml
 planners:
-  - name: "ImprovedRRT"
-    display_name: "T-RRT+RRT* (range=0.3)"
+  - name: "DualArmTRRT"
+    display_name: "DualArmTRRT (range=0.3)"
     params:
-      enable_trrt: true
-      enable_rrt_star: true
       range: 0.3  # 修改参数
       goal_bias: 0.05
 ```

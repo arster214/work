@@ -1,0 +1,68 @@
+Panels:
+  - Class: rviz/Displays
+    Help Height: 0
+    Name: Displays
+    Property Tree Widget:
+      Expanded:
+        - /Global Options1
+        - /MarkerArray1
+        - /Marker1
+        - /PointCloud21
+        - /InteractiveMarkers1
+      Splitter Ratio: 0.5
+    Tree Height: 549
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz/Grid
+      Enabled: true
+      Name: Grid
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /visualization_marker_array
+      Name: Environment_Obstacles
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /dual_arm_trrt/apf_force_markers
+      Name: APF_Forces
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color Transformer: Intensity
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: true
+      Max Color: 255; 25; 0
+      Max Intensity: 1
+      Min Color: 0; 25; 255
+      Min Intensity: -1
+      Name: Heatmap
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 5
+      Size (m): 0.01
+      Style: Flat Squares
+      Topic: /clearance_heatmap/point_cloud
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Class: rviz/InteractiveMarkers
+      Enabled: true
+      Name: APF_Probe
+      Update Topic: /apf_debug_marker/update
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: base_link_underpan
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz/Interact
+    - Class: rviz/MoveCamera
+    - Class: rviz/Select
+  Value: true
+Window Geometry:
+  Height: 800
+  Width: 1200

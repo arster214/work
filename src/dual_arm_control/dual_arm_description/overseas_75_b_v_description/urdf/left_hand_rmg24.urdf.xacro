@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <robot name="left_hand" xmlns:xacro="http://ros.org/wiki/xacro">
-  <xacro:property name="mesh_path" value="package://overseas_65_b_v_description/meshes/" />
+  <xacro:property name="mesh_path" value="package://overseas_75_b_v_description/meshes/" />
   <xacro:macro name="visual_collision" params="mesh">
   <visual>
       <origin

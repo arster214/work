@@ -1,0 +1,25 @@
+# GenerateClearanceHeatmap.srv
+# RRT Planner 调用热力图节点，请求当前环境的空间代价值/风险场
+
+# Request:
+# 1. 包含当前环境中的所有包围盒
+EnvironmentInfo env_info
+
+# (可选) 2. 规划器可以指定关注的空间范围和分辨率
+float32 resolution        # 例如: 0.05 (米)
+geometry_msgs/Point min_bound   # 空间下界 (x_min, y_min, z_min)
+geometry_msgs/Point max_bound   # 空间上界 (x_max, y_max, z_max)
+---
+# Response:
+# 1. 一维偏平化的 3D 热力图数据
+# 数据结构为 z 主导的扁平化数组，即 index = z_idx * (nx * ny) + y_idx * nx + x_idx
+float32[] heatmap_data
+
+# 2. 返回确切对应的维度大小，方便由 C++ 将一维重新拉回 3D 矩阵
+int32 dim_x
+int32 dim_y
+int32 dim_z
+
+# 3. 操作状态
+bool success
+string message

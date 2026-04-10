@@ -1,20 +1,22 @@
 # Planner Benchmark Package
 
-用于路径规划算法性能测试和数据采集的 ROS 包。
+用于路径规划算法性能测试和数据采集的 ROS 包，现已支持单臂和双臂两类实验。
 
 ## 功能
 
 - 系统化测试多种路径规划算法
 - 采集性能指标用于论文数据分析
-- 支持 ImprovedRRT 和 OMPL 规划器对比
+- 支持 `baseline_rrt` 与 `dual_arm_rrt` 规划器对比
+- 同一套脚本可根据配置切换 `l_arm`、`r_arm`、`dual_arms`
 - 自动生成 CSV 格式的实验数据
+- OMPL 与 `DualArmTRRT` 都可记录搜索树节点数/边数
 
 ## 包含的脚本
 
 ### 1. paper_data_collection.py
 主要的数据采集脚本，用于：
-- 测试多个目标姿态（每个重复 20 次）
-- 对比 ImprovedRRT、OMPL RRT、OMPL RRTstar
+- 测试单个起点终点用例（重复 20 次）
+- 对比 `OMPL RRT`、`OMPL RRTstar`、`DualArmTRRT`
 - 采集规划时间、路径长度、成功率等指标
 - 导出 CSV 格式的原始数据
 
@@ -47,6 +49,9 @@ roslaunch your_moveit_config move_group.launch
 # 使用默认配置
 rosrun planner_benchmark paper_data_collection.py
 
+# 使用双臂示例配置
+rosrun planner_benchmark paper_data_collection.py --config $(rospack find planner_benchmark)/config/test_poses_dual_arm.yaml
+
 # 或指定参数
 rosrun planner_benchmark paper_data_collection.py --runs 20 --timeout 10.0 --output ~/benchmark_results
 ```
@@ -62,17 +67,21 @@ rosrun planner_benchmark paper_data_collection.py --runs 20 --timeout 10.0 --out
 
 1. **规划时间** (planning_time) - 秒
 2. **成功/失败** (success) - 布尔值
-3. **路径长度** (path_length) - 关节空间欧氏距离
-4. **路径点数量** (num_waypoints) - 整数
-5. **平滑度** (smoothness) - 加速度变化量
+3. **树节点数** (tree_size / tree_vertices) - 搜索树规模
+4. **树边数** (tree_edges) - 搜索树连边数量
+5. **路径长度** (path_length) - 关节空间欧氏距离
+6. **平滑度** (smoothness) - 加速度变化量
 
 ## 测试配置
 
-- **规划组**: r_arm (7-DOF)
-- **起始姿态**: 全零 [0, 0, 0, 0, 0, 0, 0]
-- **目标姿态**: 4 个预定义姿态
-- **重复次数**: 每个姿态 20 次
-- **规划器**: ImprovedRRT (T-RRT+RRT*), OMPL RRT, OMPL RRTstar
+- **规划组**: `l_arm` / `r_arm` / `dual_arms`
+- **起始姿态**: 单个固定起点
+- **目标姿态**: 单个固定终点
+- **重复次数**: 20 次
+- **规划器**: OMPL RRT, OMPL RRTstar, DualArmTRRT
+- `RRT` 和 `RRTstar` 支持单臂/双臂
+- `DualArmTRRT` 仅支持 `group_name: dual_arms`
+- 双臂配置可直接写 14 维列表，也可按 `l_arm` / `r_arm` 分开填写
 
 ## 依赖
 
@@ -98,7 +107,7 @@ rosrun planner_benchmark paper_data_collection.py --runs 20 --timeout 10.0 --out
 
 ### 问题: 脚本无法连接到 MoveIt
 - 确保 move_group 节点正在运行
-- 检查规划组名称是否正确 (r_arm)
+- 检查规划组名称是否正确 (`l_arm` / `r_arm` / `dual_arms`)
 
 ### 问题: 输出文件为空
 - 检查输出目录权限

@@ -26,3 +26,12 @@ l_arm:
   longest_valid_segment_fraction: 0.005
   default_planner_config: BasicRRT
   planning_time_limit: 30.0  # Default planning time in seconds
+
+dual_arms:
+  planner_configs:
+    - BasicRRT
+    - BasicRRTStar
+  projection_evaluator: joints(l_joint1,r_joint1)
+  longest_valid_segment_fraction: 0.005
+  default_planner_config: BasicRRT
+  planning_time_limit: 30.0  # Default planning time in seconds

@@ -18,6 +18,10 @@
   <arg name="fake_execution_type" default="interpolate"/>
   <arg name="max_safe_path_cost" default="1"/>
   <arg name="publish_monitored_planning_scene" default="true"/>
+  <arg name="respawn_move_group" default="true" />
+  <arg name="respawn_delay" default="2.0" />
+  <arg name="load_baseline_rrt_pipeline" default="true" />
+  <arg name="load_dual_rrt_pipeline" default="true" />
 
   <arg name="capabilities" default=""/>
   <arg name="disable_capabilities" default=""/>
@@ -62,13 +66,14 @@
     </include>
 
     <!-- ImprovedRRT -->
-    <include file="$(dirname)/improved_rrt_planning_pipeline.launch.xml" ns="improved_rrt" />
 
     <!-- Baseline RRT -->
-    <include file="$(dirname)/baseline_rrt_planning_pipeline.launch.xml" ns="baseline_rrt" />
+    <include if="$(arg load_baseline_rrt_pipeline)"
+             file="$(dirname)/baseline_rrt_planning_pipeline.launch.xml" ns="baseline_rrt" />
 
   <!-- DualArm RRT -->
-  <include file="$(dirname)/dual_rrt_planning_pipeline.launch.xml" ns="dual_rrt" />
+  <include if="$(arg load_dual_rrt_pipeline)"
+           file="$(dirname)/dual_rrt_planning_pipeline.launch.xml" ns="dual_rrt" />
 
     <!-- Support custom planning pipeline -->
     <include if="$(eval arg('pipeline') not in ['ompl', 'chomp', 'pilz_industrial_motion_planner'])"
@@ -90,9 +95,10 @@
   </include>
 
   <!-- Start the actual move_group node/action server -->
-  <node name="move_group" launch-prefix="$(arg launch_prefix)" pkg="moveit_ros_move_group" type="move_group" respawn="false" output="screen" args="$(arg command_args)">
+  <node name="move_group" launch-prefix="$(arg launch_prefix)" pkg="moveit_ros_move_group" type="move_group" respawn="$(arg respawn_move_group)" respawn_delay="$(arg respawn_delay)" output="screen" args="$(arg command_args)">
     <!-- Set the display variable, in case OpenGL code is used internally -->
     <env name="DISPLAY" value="$(optenv DISPLAY :0)" />
+    <env name="ROSCONSOLE_CONFIG_FILE" value="$(find dual_75b_arm_rmg24_moveit_config)/config/move_group_rosconsole.config" />
 
     <param name="allow_trajectory_execution" value="$(arg allow_trajectory_execution)"/>
     <param name="sense_for_plan/max_safe_path_cost" value="$(arg max_safe_path_cost)"/>

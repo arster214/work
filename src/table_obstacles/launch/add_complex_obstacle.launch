@@ -1,0 +1,34 @@
+<launch>
+  <!-- 启动 Gazebo + MoveIt -->
+  <include file="$(find dual_75b_arm_gazebo)/launch/arm_75_bringup_moveit_rmg24.launch"/>
+  
+  <!-- 参数：是否在 Gazebo 中显示障碍物 -->
+  <arg name="use_gazebo" default="true"/>
+  <arg name="publish_environment_info" default="true"/>
+  <arg name="environment_topic" default="/map_process/environment_info"/>
+  
+  <!-- 等待 Gazebo 和 MoveIt 完全启动 -->
+  <arg name="wait_time" default="15"/>
+  
+  <!-- 启动复杂障碍物节点（仅 MoveIt），去除小球和护栏 -->
+  <node pkg="table_obstacles"
+        type="add_complex_obstacle.py"
+        name="add_complex_obstacle"
+        output="screen"
+        launch-prefix="bash -c 'sleep $(arg wait_time); exec $0 $@' "
+        unless="$(arg use_gazebo)">
+    <param name="publish_environment_info" value="$(arg publish_environment_info)" />
+    <param name="environment_topic" value="$(arg environment_topic)" />
+  </node>
+  
+  <!-- 启动复杂障碍物节点（Gazebo + MoveIt），去除小球和护栏 -->
+  <node pkg="table_obstacles"
+        type="add_complex_obstacle_gazebo.py"
+        name="add_complex_obstacle_gazebo"
+        output="screen"
+        launch-prefix="bash -c 'sleep $(arg wait_time); exec $0 $@' "
+        if="$(arg use_gazebo)">
+    <param name="publish_environment_info" value="$(arg publish_environment_info)" />
+    <param name="environment_topic" value="$(arg environment_topic)" />
+  </node>
+</launch>

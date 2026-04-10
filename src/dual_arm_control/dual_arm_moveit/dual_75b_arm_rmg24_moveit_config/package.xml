@@ -36,6 +36,7 @@
   <!-- This package is referenced in the warehouse launch files, but does not build out of the box at the moment. Commented the dependency until this works. -->
   <!-- <run_depend>warehouse_ros_mongo</run_depend> -->
   <run_depend>overseas_75_b_v_description</run_depend>
+  <run_depend>ompl_stats_planner</run_depend>
 
 
 </package>

@@ -1,56 +1,51 @@
 # 测试姿态配置文件
 # 用于论文数据采集
 
-# 规划组名称
+# 统一测试配置
+# 推荐使用 group_name: "auto"
+# 规则：
+# 1. 如果某一侧机械臂的起点和终点都为全 0，则自动判定为另一侧单臂测试
+# 2. 如果左右臂都不是“起点全 0 且终点全 0”，则自动判定为双臂测试
 group_name: "r_arm"
 
-# 起始姿态 (home position - 全零)
-home_joints: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+# 单轮测试使用的一组起点终点
+# 下面这个示例表示“右臂单臂测试”，因为左臂起点和终点都为全 0
+start_joints:
+  l_arm: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  r_arm: [1.053, 1.493, -2.223, -0.158, -2.289, 0.431, 3.765]
 
-# 目标姿态列表
-goal_poses:
-  - id: "pose_1"
-    description: "目标姿态 1"
-    joints: [1.862, 0.664, 0.345, 1.449, -1.457, 1.128, 0.849]
-
-  - id: "pose_2"
-    description: "目标姿态 2"
-    joints: [-1.012, -1.372, 2.331, 0.195, -2.949, -0.966, -3.475]
-
-  - id: "pose_3"
-    description: "目标姿态 3"
-    joints: [2.630, 0.850, -0.761, 1.432, -2.464, -0.535, 1.681]
+goal_pose:
+  id: "pose_1"
+  description: "目标姿态 1"
+  joints:
+    l_arm: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    r_arm: [1.748, 2.020, 1.099, 0.182, -0.411, -0.605, 4.849]
 
 # 规划器配置
 planners:
-  - name: "BasicRRT"
-    display_name: "RRT (Baseline)"
-    description: "基础 RRT（KD-Tree，无目标偏置）"
+  - name: "RRT"
+    display_name: "OMPL RRT"
+    description: "MoveIt/OMPL 自带的 RRT，适合作为首解速度基线"
+    supported_groups: ["l_arm", "r_arm", "dual_arms"]
     params:
       range: 0.5
-      
-  - name: "BasicRRTStar"
-    display_name: "RRT* (Baseline)"
-    description: "基础 RRT*（KD-Tree，无目标偏置）"
-    params:
-      range: 0.5
-      rewire_radius: 0.75
-      
-  - name: "ImprovedRRT"
-    display_name: "T-RRT+RRT* (Ours)"
-    description: "我们的完整 ImprovedRRT 实现"
-    params:
-      enable_trrt: true
-      enable_rrt_star: true
-      range: 0.5
-      goal_bias: 0.05
-      init_temperature: 100.0
-      temp_change_factor: 0.1
-      rewire_radius: 0.75
 
 # 测试参数
 test_params:
-  num_runs: 20              # 每个姿态重复次数
-  timeout: 30.0             # 规划超时时间（秒）- BasicRRT 需要更长时间
+  num_runs: 50               # 单个测试用例重复次数
+  timeout: 20.0             # 规划超时时间（秒）
   reset_delay: 1.0          # 重置后等待时间（秒）- 增加以确保稳定
   output_dir: "~/benchmark_results"  # 输出目录
+  planning_watchdog_padding: 15.0    # 主进程 watchdog 比 planning timeout 额外多等多久
+  planning_attempts: 1                # 采集 tree_size 时建议保持 1；>1 会触发 OMPL ParallelPlan，PlannerData 常为空
+  worker_poll_interval: 0.2          # 等待 move_group 恢复时的轮询周期
+  kill_move_group_on_timeout: true   # worker 超时后是否主动 kill /move_group
+  move_group_node_name: "/move_group"  # 需要恢复的 MoveIt 节点名
+  move_group_action_name: "move_group"  # 需要真正恢复可连接的 action server 名称
+  move_group_recovery_wait: 15.0     # 每次恢复时等待 move_group 回来的时间
+  move_group_shutdown_wait: 5.0      # kill 后等待旧 move_group 从 ROS 图中消失的时间
+  move_group_ready_wait: 15.0        # worker 启动时等待 move_group action server 可连接的时间
+  reconnect_retry_delay: 2.0         # 多次恢复尝试之间的等待时间
+  max_recovery_attempts: 1           # 最多恢复尝试次数
+  restart_move_group_command: ""     # 如需手动重启，可填写 roslaunch/rosrun 命令
+  stop_on_unrecoverable_move_group: true  # 若 MoveIt 明显未恢复，提前停止 benchmark

@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(map_process)
 
 find_package(catkin REQUIRED COMPONENTS
+  clearance_heatmap_msgs
   roscpp
   rospy
   visualization_msgs

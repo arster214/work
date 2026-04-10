@@ -1,0 +1,9 @@
+<library path="libompl_stats_planner">
+  <class name="ompl_stats_planner/OMPLStatsPlanner"
+         type="ompl_stats_planner::OMPLStatsPlannerManager"
+         base_class_type="planning_interface::PlannerManager">
+    <description>
+      OMPL planner plugin wrapper that publishes search tree statistics via PlannerData.
+    </description>
+  </class>
+</library>

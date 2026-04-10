@@ -1,5 +1,0 @@
-<library path="libdual_arm_rrt_plugin">
-  <class name="dual_arm_planner/DualArmPlannerManager" type="dual_arm_planner::DualArmPlannerManager" base_class_type="planning_interface::PlannerManager">
-    <description>Dual-arm RRT Planner Manager (Standalone)</description>
-  </class>
-</library>

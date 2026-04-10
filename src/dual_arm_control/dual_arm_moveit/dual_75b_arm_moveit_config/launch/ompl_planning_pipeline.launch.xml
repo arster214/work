@@ -14,10 +14,14 @@
   <arg name="start_state_max_bounds_error" default="0.1" />
   <arg name="jiggle_fraction" default="0.05" />
 
-  <param name="planning_plugin" value="ompl_interface/OMPLPlanner" />
+  <arg name="planning_plugin" default="ompl_stats_planner/OMPLStatsPlanner" />
+  <arg name="ompl_planning_stats_topic" default="/ompl_planning_stats" />
+
+  <param name="planning_plugin" value="$(arg planning_plugin)" />
   <param name="request_adapters" value="$(arg planning_adapters)" />
   <param name="start_state_max_bounds_error" value="$(arg start_state_max_bounds_error)" />
   <param name="jiggle_fraction" value="$(arg jiggle_fraction)" />
+  <param name="ompl_planning_stats_topic" value="$(arg ompl_planning_stats_topic)" />
 
   <rosparam command="load" file="$(find dual_75b_arm_moveit_config)/config/ompl_planning.yaml"/>
 

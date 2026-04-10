@@ -454,7 +454,7 @@
         <visual>
             <origin rpy="0 0 0" xyz="0 0 0" />
             <geometry>
-                <mesh filename="package://overseas_65_b_v_description/meshes/base_link2.STL" />
+                <mesh filename="package://overseas_75_b_v_description/meshes/base_link2.STL" />
             </geometry>
             <material name="">
                 <color rgba="0.75294 0.75294 0.75294 1" />
@@ -463,7 +463,7 @@
         <collision>
             <origin rpy="0 0 0" xyz="0 0 0" />
             <geometry>
-                <mesh filename="package://overseas_65_b_v_description/meshes/base_link2.STL" />
+                <mesh filename="package://overseas_75_b_v_description/meshes/base_link2.STL" />
             </geometry>
         </collision>
     </link>
@@ -476,7 +476,7 @@
         <visual>
             <origin rpy="0 0 0" xyz="0 0 0" />
             <geometry>
-                <mesh filename="package://overseas_65_b_v_description/meshes/Link_finger1.STL" />
+                <mesh filename="package://overseas_75_b_v_description/meshes/Link_finger1.STL" />
             </geometry>
             <material name="">
                 <color rgba="0.75294 0.75294 0.75294 1" />
@@ -485,7 +485,7 @@
         <collision>
             <origin rpy="0 0 0" xyz="0 0 0" />
             <geometry>
-                <mesh filename="package://overseas_65_b_v_description/meshes/Link_finger1.STL" />
+                <mesh filename="package://overseas_75_b_v_description/meshes/Link_finger1.STL" />
             </geometry>
         </collision>
     </link>
@@ -498,7 +498,7 @@
         <visual>
             <origin rpy="0 0 0" xyz="0 0 0" />
             <geometry>
-                <mesh filename="package://overseas_65_b_v_description/meshes/Link_finger2.STL" />
+                <mesh filename="package://overseas_75_b_v_description/meshes/Link_finger2.STL" />
             </geometry>
             <material name="">
                 <color rgba="0.75294 0.75294 0.75294 1" />
@@ -507,7 +507,7 @@
         <collision>
             <origin rpy="0 0 0" xyz="0 0 0" />
             <geometry>
-                <mesh filename="package://overseas_65_b_v_description/meshes/Link_finger2.STL" />
+                <mesh filename="package://overseas_75_b_v_description/meshes/Link_finger2.STL" />
             </geometry>
         </collision>
     </link>
@@ -535,7 +535,7 @@
         <visual>
             <origin rpy="0 0 0" xyz="0 0 0" />
             <geometry>
-                <mesh filename="package://overseas_65_b_v_description/meshes/base_link2.STL" />
+                <mesh filename="package://overseas_75_b_v_description/meshes/base_link2.STL" />
             </geometry>
             <material name="">
                 <color rgba="0.75294 0.75294 0.75294 1" />
@@ -544,7 +544,7 @@
         <collision>
             <origin rpy="0 0 0" xyz="0 0 0" />
             <geometry>
-                <mesh filename="package://overseas_65_b_v_description/meshes/base_link2.STL" />
+                <mesh filename="package://overseas_75_b_v_description/meshes/base_link2.STL" />
             </geometry>
         </collision>
     </link>
@@ -557,7 +557,7 @@
         <visual>
             <origin rpy="0 0 0" xyz="0 0 0" />
             <geometry>
-                <mesh filename="package://overseas_65_b_v_description/meshes/Link_finger1.STL" />
+                <mesh filename="package://overseas_75_b_v_description/meshes/Link_finger1.STL" />
             </geometry>
             <material name="">
                 <color rgba="0.75294 0.75294 0.75294 1" />
@@ -566,7 +566,7 @@
         <collision>
             <origin rpy="0 0 0" xyz="0 0 0" />
             <geometry>
-                <mesh filename="package://overseas_65_b_v_description/meshes/Link_finger1.STL" />
+                <mesh filename="package://overseas_75_b_v_description/meshes/Link_finger1.STL" />
             </geometry>
         </collision>
     </link>
@@ -579,7 +579,7 @@
         <visual>
             <origin rpy="0 0 0" xyz="0 0 0" />
             <geometry>
-                <mesh filename="package://overseas_65_b_v_description/meshes/Link_finger2.STL" />
+                <mesh filename="package://overseas_75_b_v_description/meshes/Link_finger2.STL" />
             </geometry>
             <material name="">
                 <color rgba="0.75294 0.75294 0.75294 1" />
@@ -588,7 +588,7 @@
         <collision>
             <origin rpy="0 0 0" xyz="0 0 0" />
             <geometry>
-                <mesh filename="package://overseas_65_b_v_description/meshes/Link_finger2.STL" />
+                <mesh filename="package://overseas_75_b_v_description/meshes/Link_finger2.STL" />
             </geometry>
         </collision>
     </link>
